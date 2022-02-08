@@ -25,7 +25,6 @@ class Population:
             baby = parentA.makeBabyWith(parentB)
             baby.nSwap(Config.amountBitSwaps)
             offspring.append(baby)
-            self.updateFrequencyTable(baby)
         return offspring
 
     def updateFrequencyTable(self, individual):
@@ -39,6 +38,10 @@ class Population:
 
     def selectLeastFrequent(self, offspring, amount):
         selectionPool = self.individuals + offspring
+
+        for individual in selectionPool:
+            self.updateFrequencyTable(individual)
+
         frequencyTable = {
             'individual': [],
             'objectiveValue': [],
