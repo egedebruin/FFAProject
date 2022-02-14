@@ -4,5 +4,5 @@ class Config:
     offspringSize = 16
     amountBitSwaps = 10
     # generations = 10
-    runs = 11
-    timePerRun = 3
+    runs = 20
+    timePerRun = 300
