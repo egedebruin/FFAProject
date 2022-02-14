@@ -5,4 +5,4 @@ class Config:
     amountBitSwaps = 10
     # generations = 10
     runs = 11
-    timePerRun = 300
+    timePerRun = 3

@@ -1,3 +1,4 @@
+import itertools
 import random
 from abc import ABC
 from collections import defaultdict
@@ -46,24 +47,22 @@ class SimpleEncoding(Genotype, ABC):
             return
 
         for i in range(n):
-            improved = False
-            swapsTried = 0
+            self.isBestOfNeighbourhood = True
 
-            while not improved:
-                newSimpleEncoding = self.singleSwap()
+            swaps = list(itertools.permutations(range(len(self.sequence)), 2))
+            random.shuffle(swaps)
+
+            for (firstIndex, secondIndex) in swaps:
+                newSimpleEncoding = self.singleSwap(firstIndex, secondIndex)
                 if newSimpleEncoding.__lt__(self):
-                    improved = True
                     self.sequence = newSimpleEncoding.sequence
-                swapsTried += 1
+                    self.objectiveValue = newSimpleEncoding.getObjectiveValue()
+                    self.isBestOfNeighbourhood = False
+                    break
 
-                if swapsTried >= (Config.jssp.amountJobs * Config.jssp.amountMachines):
-                    self.isBestOfNeighbourhood = True
-                    return
-
-    def singleSwap(self):
+    def singleSwap(self, firstIndex, secondIndex):
         newSequence = self.sequence.copy()
-        first, second = random.sample(range(len(newSequence)), 2)
-        newSequence[first], newSequence[second] = newSequence[second], newSequence[first]
+        newSequence[firstIndex], newSequence[secondIndex] = newSequence[secondIndex], newSequence[firstIndex]
         newSimpleEncoding = SimpleEncoding(newSequence)
         return newSimpleEncoding
 
