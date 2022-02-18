@@ -48,7 +48,7 @@ class Algorithm:
         functionEvaluations = 1
 
         while functionEvaluations < Config.maxFunctionEvaluations:
-            if functionEvaluations % 10000 == 0:
+            if functionEvaluations % 100000 == 0:
                 print(functionEvaluations)
 
             newIndividual = population.individuals[0].randomSingleSwap()

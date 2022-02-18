@@ -91,6 +91,6 @@ class SimpleEncoding(Genotype, ABC):
         return baby
 
     def getObjectiveValue(self):
-        if self.objectiveValue == 0:
-            self.objectiveValue = self.toPhenotype().getObjectiveValue()
+        #if self.objectiveValue == 0:
+        #    self.objectiveValue = self.toPhenotype().getObjectiveValue()
         return self.objectiveValue
