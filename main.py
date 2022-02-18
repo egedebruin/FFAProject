@@ -3,6 +3,7 @@ from Experiments import Experiments
 from Util import Util
 from algorithm.Algorithm import Algorithm
 from jssp.JSSPFactory import JSSPFactory
+import threading
 
 
 # Get JSSP instance
@@ -17,7 +18,11 @@ Config.jssp = JSSPFactory.generateJSSPFromFormat(library['abz5'])
 
 # Run algorithm
 # Algorithm.memeticAlgorithm()
-Algorithm.hillClimberAlgorithm()
+x = threading.Thread(target=Algorithm.hillClimberAlgorithm, args=(1,))
+y = threading.Thread(target=Algorithm.hillClimberAlgorithm, args=(2,))
+
+x.start()
+y.start()
 # Run experiments
 # allTimes, bestInstance, bestTime = Experiments.doRandomExperiments(1)
 

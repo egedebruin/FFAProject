@@ -40,17 +40,19 @@ class Algorithm:
         return allPopulations, best
 
     @staticmethod
-    def hillClimberAlgorithm():
+    def hillClimberAlgorithm(number):
         allPopulations = []
         population = GenotypeFactory.generateRandomSimpleEncodingPopulation(1)
         best = population.individuals[0]
         allPopulations.append(population.getIndividualsStringSingleIndividual())
         functionEvaluations = 1
+        timeThingy = 0
 
         while functionEvaluations < Config.maxFunctionEvaluations:
             if functionEvaluations % 10000 == 0:
-                print(Config.timeThingy)
-                Config.timeThingy = 0
+                print(timeThingy)
+                print(number)
+                timeThingy = 0
             currentTime = time.time()
             newIndividual = population.individuals[0].randomSingleSwap()
 
@@ -60,7 +62,7 @@ class Algorithm:
             allPopulations.append(population.getIndividualsStringSingleIndividual())
 
             functionEvaluations += 1
-            Config.timeThingy += time.time() - currentTime
+            timeThingy += time.time() - currentTime
 
         return allPopulations, best
 
