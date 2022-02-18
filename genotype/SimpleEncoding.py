@@ -66,6 +66,13 @@ class SimpleEncoding(Genotype, ABC):
         newSimpleEncoding = SimpleEncoding(newSequence)
         return newSimpleEncoding
 
+    def randomSingleSwap(self):
+        firstIndex = random.randint(0, len(self.sequence) - 1)
+        secondIndex = firstIndex
+        while secondIndex == firstIndex:
+            secondIndex = random.randint(0, len(self.sequence) - 1)
+        return self.singleSwap(firstIndex, secondIndex)
+
     def makeBabyWith(self, otherSimpleEncoding):
         babySequence = []
         parentASequence = self.sequence.copy()

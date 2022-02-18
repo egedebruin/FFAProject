@@ -36,6 +36,11 @@ class Population:
         selectionPool.sort()
         return selectionPool[:amount]
 
+    def selectBestPreferOffspring(self, offspring):
+        if offspring[0].getObjectiveValue() <= self.individuals[0].getObjectiveValue():
+            return offspring
+        return self.individuals
+
     def selectLeastFrequent(self, offspring, amount):
         selectionPool = self.individuals + offspring
 
@@ -60,6 +65,16 @@ class Population:
         sortedDataFrame = dataFrame.sort_values(by=['frequency', 'objectiveValue'])
 
         return sortedDataFrame['individual'].tolist()[:amount]
+
+    def selectLeastFrequentPreferOffspring(self, offspring):
+        selectionPool = self.individuals + offspring
+
+        for individual in selectionPool:
+            self.updateFrequencyTable(individual)
+
+        if self.frequency[offspring[0].getObjectiveValue()] <= self.frequency[self.individuals[0].getObjectiveValue()]:
+            return offspring
+        return self.individuals
 
     def getIndividualsString(self):
         result = ''

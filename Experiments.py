@@ -20,7 +20,7 @@ class Experiments:
             if i % 10000 == 0:
                 print("Doing experiment number: " + str(i))
 
-            randomGenotype = initialGenotype
+            randomGenotype = GenotypeFactory.generateRandomSimpleEncoding()
 
             phenotype = randomGenotype.toPhenotype()
             executionTime = phenotype.getObjectiveValue()
@@ -61,6 +61,37 @@ class Experiments:
                 print("Instance with name " + instanceName + " done.")
                 print("-----")
                 Experiments.writeFiles(allPopulationsMA, allPopulationsFMA, results, instanceName, run)
+            run += 1
+            print("-----")
+
+    @staticmethod
+    def runHillClimberComparisonExperiment(library):
+        results, run, currentInstance, correctRestart = Experiments.restartValues()
+
+        while True:
+            if run > Config.runs:
+                break
+            print("Starting experiment run: " + str(run))
+            print("-----")
+            for instanceName, instance in library.items():
+                if not correctRestart:
+                    if instanceName == currentInstance:
+                        correctRestart = True
+                    continue
+                Config.jssp = JSSPFactory.generateJSSPFromFormat(instance)
+                print("Running normal hill climber algorithm " + instanceName)
+                allPopulationsHC, bestHC = Algorithm.hillClimberAlgorithm()
+                print("Running FFA hill climber algorithm " + instanceName)
+                allPopulationsFHC, bestFHC = Algorithm.frequencyAssignmentHillClimberAlgorithm()
+
+                results = results.append({'run': run, 'instance': instanceName,
+                                          'bestFMA': int(bestFHC.getObjectiveValue()),
+                                          'bestMA': int(bestHC.getObjectiveValue())},
+                                         ignore_index=True)
+
+                print("Instance with name " + instanceName + " done.")
+                print("-----")
+                Experiments.writeFiles(allPopulationsHC, allPopulationsFHC, results, instanceName, run)
             run += 1
             print("-----")
 

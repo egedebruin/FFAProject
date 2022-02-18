@@ -38,3 +38,55 @@ class Algorithm:
             allPopulations.append(population.getIndividualsString())
 
         return allPopulations, best
+
+    @staticmethod
+    def hillClimberAlgorithm():
+        allPopulations = []
+        population = GenotypeFactory.generateRandomSimpleEncodingPopulation(1)
+        best = population.individuals[0]
+        allPopulations.append(population.getIndividualsString())
+        functionEvaluations = 1
+        time1 = 0
+        time2 = 0
+        time3 = 0
+
+        while functionEvaluations < Config.maxFunctionEvaluations:
+            if functionEvaluations % 10000 == 0:
+                print(functionEvaluations)
+                print(time1)
+                print(time2)
+                print(time3)
+                time1 = 0
+                time2 = 0
+                time3 = 0
+
+            newIndividual = population.individuals[0].randomSingleSwap()
+
+            best = population.selectBest([best, newIndividual], 1)[0]
+
+            population.individuals = population.selectBestPreferOffspring([newIndividual])
+            allPopulations.append(population.getIndividualsString())
+
+            functionEvaluations += 1
+
+        return allPopulations, best
+
+    @staticmethod
+    def frequencyAssignmentHillClimberAlgorithm():
+        allPopulations = []
+        population = GenotypeFactory.generateRandomSimpleEncodingPopulation(1)
+        best = population.individuals[0]
+        allPopulations.append(population.getIndividualsString())
+        functionEvaluations = 1
+
+        while functionEvaluations < Config.maxFunctionEvaluations:
+            newIndividual = population.individuals[0].randomSingleSwap()
+
+            best = population.selectBest([best, newIndividual], 1)[0]
+
+            population.individuals = population.selectLeastFrequentPreferOffspring([newIndividual])
+            allPopulations.append(population.getIndividualsString())
+
+            functionEvaluations += 1
+
+        return allPopulations, best
