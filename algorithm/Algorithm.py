@@ -44,18 +44,23 @@ class Algorithm:
         allPopulations = []
         population = GenotypeFactory.generateRandomSimpleEncodingPopulation(1)
         best = population.individuals[0]
-        allPopulations.append(population.getIndividualsString())
+        allPopulations.append(population.getIndividualsStringSingleIndividual())
         functionEvaluations = 1
 
         while functionEvaluations < Config.maxFunctionEvaluations:
+            if functionEvaluations % 10000 == 0:
+                print(Config.timeThingy)
+                Config.timeThingy = 0
+            currentTime = time.time()
             newIndividual = population.individuals[0].randomSingleSwap()
 
             best = population.selectBest([best, newIndividual], 1)[0]
 
             population.individuals = population.selectBestPreferOffspring([newIndividual])
-            allPopulations.append(population.getIndividualsString())
+            allPopulations.append(population.getIndividualsStringSingleIndividual())
 
             functionEvaluations += 1
+            Config.timeThingy += time.time() - currentTime
 
         return allPopulations, best
 
@@ -64,7 +69,7 @@ class Algorithm:
         allPopulations = []
         population = GenotypeFactory.generateRandomSimpleEncodingPopulation(1)
         best = population.individuals[0]
-        allPopulations.append(population.getIndividualsString())
+        allPopulations.append(population.getIndividualsStringSingleIndividual())
         functionEvaluations = 1
 
         while functionEvaluations < Config.maxFunctionEvaluations:
@@ -73,7 +78,7 @@ class Algorithm:
             best = population.selectBest([best, newIndividual], 1)[0]
 
             population.individuals = population.selectLeastFrequentPreferOffspring([newIndividual])
-            allPopulations.append(population.getIndividualsString())
+            allPopulations.append(population.getIndividualsStringSingleIndividual())
 
             functionEvaluations += 1
 

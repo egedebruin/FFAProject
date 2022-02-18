@@ -6,3 +6,4 @@ class Config:
     runs = 20
     timePerRun = 300
     maxFunctionEvaluations = 2 ** 30
+    timeThingy = 0

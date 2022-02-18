@@ -1,11 +1,11 @@
 import itertools
 import random
+import time
 from abc import ABC
 from collections import defaultdict
 
 from Config import Config
 from genotype.Genotype import Genotype
-from phenotype.MachineJob import MachineJob
 from phenotype.Phenotype import Phenotype
 
 
@@ -25,22 +25,32 @@ class SimpleEncoding(Genotype, ABC):
         endTimeMachine = defaultdict(lambda: 0, {})
         endTimeJob = defaultdict(lambda: 0, {})
 
+        highestEndTime = 0
         for jobId in self.sequence:
             currentJob = Config.jssp.jobList[jobId][amountMachinesFinished[jobId]]
             jobTime = currentJob.executionTime
             machineId = currentJob.machineId
 
-            currentStartTime = max(endTimeMachine[machineId], endTimeJob[jobId])
+            currentStartTime = endTimeMachine[machineId]
+            if endTimeJob[jobId] > currentStartTime:
+                currentStartTime = endTimeJob[jobId]
             currentEndTime = currentStartTime + jobTime
 
-            machineJob = MachineJob(jobId, currentStartTime, currentEndTime)
+            if currentEndTime > highestEndTime:
+                highestEndTime = currentEndTime
+
+            machineJob = {
+                'jobId': jobId,
+                'startTime': currentStartTime,
+                'endTime': currentEndTime
+            }
             resultMachineList[machineId].append(machineJob)
 
             endTimeMachine[machineId] = currentEndTime
             endTimeJob[jobId] = currentEndTime
             amountMachinesFinished[jobId] += 1
 
-        return Phenotype(resultMachineList)
+        return Phenotype(resultMachineList, highestEndTime)
 
     def nSwap(self, n):
         if self.isBestOfNeighbourhood:
