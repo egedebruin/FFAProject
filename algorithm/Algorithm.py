@@ -48,9 +48,6 @@ class Algorithm:
         functionEvaluations = 1
 
         while functionEvaluations < Config.maxFunctionEvaluations:
-            if functionEvaluations % 100000 == 0:
-                print(functionEvaluations)
-
             newIndividual = population.individuals[0].randomSingleSwap()
 
             best = population.selectBest([best, newIndividual], 1)[0]

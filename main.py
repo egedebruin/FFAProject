@@ -10,14 +10,14 @@ from jssp.JSSPFactory import JSSPFactory
 
 library = Util.readFullLibrary('files/jssp-instances/full_library.txt')
 
-#Experiments.runComparisonExperiment(library)
+Experiments.runComparisonExperiment(library)
 
-Config.jssp = JSSPFactory.generateJSSPFromFormat(library['abz5'])
+# Config.jssp = JSSPFactory.generateJSSPFromFormat(library['abz5'])
 # Config.jssp = JSSPFactory.generateJSSPRandom(10, 10, 'uniform')
 
 # Run algorithm
 # Algorithm.memeticAlgorithm()
-Algorithm.hillClimberAlgorithm()
+# Algorithm.hillClimberAlgorithm()
 # Run experiments
 # allTimes, bestInstance, bestTime = Experiments.doRandomExperiments(1)
 
