@@ -46,19 +46,10 @@ class Algorithm:
         best = population.individuals[0]
         allPopulations.append(population.getIndividualsString())
         functionEvaluations = 1
-        time1 = 0
-        time2 = 0
-        time3 = 0
 
         while functionEvaluations < Config.maxFunctionEvaluations:
             if functionEvaluations % 10000 == 0:
                 print(functionEvaluations)
-                print(time1)
-                print(time2)
-                print(time3)
-                time1 = 0
-                time2 = 0
-                time3 = 0
 
             newIndividual = population.individuals[0].randomSingleSwap()
 
