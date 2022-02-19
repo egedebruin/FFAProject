@@ -40,20 +40,14 @@ class Algorithm:
         return allPopulations, best
 
     @staticmethod
-    def hillClimberAlgorithm(number):
+    def hillClimberAlgorithm(instance):
         allPopulations = []
-        population = GenotypeFactory.generateRandomSimpleEncodingPopulation(1)
+        population = GenotypeFactory.generateRandomSimpleEncodingPopulation(1, instance)
         best = population.individuals[0]
         allPopulations.append(population.getIndividualsStringSingleIndividual())
         functionEvaluations = 1
-        timeThingy = 0
 
         while functionEvaluations < Config.maxFunctionEvaluations:
-            if functionEvaluations % 10000 == 0:
-                print(timeThingy)
-                print(number)
-                timeThingy = 0
-            currentTime = time.time()
             newIndividual = population.individuals[0].randomSingleSwap()
 
             best = population.selectBest([best, newIndividual], 1)[0]
@@ -62,19 +56,20 @@ class Algorithm:
             allPopulations.append(population.getIndividualsStringSingleIndividual())
 
             functionEvaluations += 1
-            timeThingy += time.time() - currentTime
 
         return allPopulations, best
 
     @staticmethod
-    def frequencyAssignmentHillClimberAlgorithm():
+    def frequencyAssignmentHillClimberAlgorithm(instance, name, run):
         allPopulations = []
-        population = GenotypeFactory.generateRandomSimpleEncodingPopulation(1)
+        population = GenotypeFactory.generateRandomSimpleEncodingPopulation(1, instance)
         best = population.individuals[0]
         allPopulations.append(population.getIndividualsStringSingleIndividual())
         functionEvaluations = 1
 
         while functionEvaluations < Config.maxFunctionEvaluations:
+            if functionEvaluations % 1000000 == 0:
+                print("On function evaluation " + str(functionEvaluations) + " for instance " + name + " in run " + str(run))
             newIndividual = population.individuals[0].randomSingleSwap()
 
             best = population.selectBest([best, newIndividual], 1)[0]

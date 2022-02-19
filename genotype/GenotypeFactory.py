@@ -8,12 +8,15 @@ from genotype.SimpleEncoding import SimpleEncoding
 class GenotypeFactory:
 
     @staticmethod
-    def generateInitialSimpleEncoding():
+    def generateInitialSimpleEncoding(instance=None):
+        jsspInstance = Config.jssp
+        if instance is not None:
+            jsspInstance = instance
         sequence = []
-        for i in range(Config.jssp.amountJobs):
-            for j in range(Config.jssp.amountMachines):
+        for i in range(jsspInstance.amountJobs):
+            for j in range(jsspInstance.amountMachines):
                 sequence.append(i)
-        return SimpleEncoding(sequence)
+        return SimpleEncoding(sequence, instance)
 
     @staticmethod
     def generateRandomSimpleEncodingFromSequence(sequence):
@@ -21,10 +24,10 @@ class GenotypeFactory:
         return SimpleEncoding(randomSequence)
 
     @staticmethod
-    def generateRandomSimpleEncodingPopulationFromSequence(sequence, n):
+    def generateRandomSimpleEncodingPopulationFromSequence(sequence, n, instance=None):
         population = []
         for i in range(n):
-            newEncoding = SimpleEncoding(random.sample(sequence, len(sequence)))
+            newEncoding = SimpleEncoding(random.sample(sequence, len(sequence)), instance)
             population.append(newEncoding)
         return Population(population)
 
@@ -34,6 +37,6 @@ class GenotypeFactory:
         return GenotypeFactory.generateRandomSimpleEncodingFromSequence(initialGenotype.sequence)
 
     @staticmethod
-    def generateRandomSimpleEncodingPopulation(n):
-        initialGenotype = GenotypeFactory.generateInitialSimpleEncoding()
-        return GenotypeFactory.generateRandomSimpleEncodingPopulationFromSequence(initialGenotype.sequence, n)
+    def generateRandomSimpleEncodingPopulation(n, instance=None):
+        initialGenotype = GenotypeFactory.generateInitialSimpleEncoding(instance)
+        return GenotypeFactory.generateRandomSimpleEncodingPopulationFromSequence(initialGenotype.sequence, n, instance)

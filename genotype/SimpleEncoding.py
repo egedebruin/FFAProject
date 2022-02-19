@@ -11,10 +11,14 @@ from phenotype.Phenotype import Phenotype
 
 class SimpleEncoding(Genotype, ABC):
 
-    def __init__(self, sequence):
+    def __init__(self, sequence, instance=None):
         self.sequence = sequence
         self.objectiveValue = 0
         self.isBestOfNeighbourhood = False
+
+        self.jsspInstance = Config.jssp
+        if instance is not None:
+            self.jsspInstance = instance
 
     def __lt__(self, otherSimpleEncoding):
         return self.getObjectiveValue() < otherSimpleEncoding.getObjectiveValue()
@@ -27,7 +31,7 @@ class SimpleEncoding(Genotype, ABC):
 
         highestEndTime = 0
         for jobId in self.sequence:
-            currentJob = Config.jssp.jobList[jobId][amountMachinesFinished[jobId]]
+            currentJob = self.jsspInstance.jobList[jobId][amountMachinesFinished[jobId]]
             jobTime = currentJob.executionTime
             machineId = currentJob.machineId
 
@@ -73,7 +77,7 @@ class SimpleEncoding(Genotype, ABC):
     def singleSwap(self, firstIndex, secondIndex):
         newSequence = self.sequence.copy()
         newSequence[firstIndex], newSequence[secondIndex] = newSequence[secondIndex], newSequence[firstIndex]
-        newSimpleEncoding = SimpleEncoding(newSequence)
+        newSimpleEncoding = SimpleEncoding(newSequence, self.jsspInstance)
         return newSimpleEncoding
 
     def randomSingleSwap(self):
@@ -97,7 +101,7 @@ class SimpleEncoding(Genotype, ABC):
             parentBSequence.remove(newValue)
             babySequence.append(newValue)
 
-        baby = SimpleEncoding(babySequence)
+        baby = SimpleEncoding(babySequence, self.jsspInstance)
         return baby
 
     def getObjectiveValue(self):

@@ -1,7 +1,11 @@
+from time import sleep
+
 from Config import Config
 from algorithm.Algorithm import Algorithm
 from genotype.GenotypeFactory import GenotypeFactory
 from jssp.JSSPFactory import JSSPFactory
+from multiprocessing import Process
+from multiprocessing import Pool
 import pandas as pd
 import os
 
@@ -66,34 +70,41 @@ class Experiments:
 
     @staticmethod
     def runHillClimberComparisonExperiment(library):
-        results, run, currentInstance, correctRestart = Experiments.restartValues()
-
-        while True:
-            if run > Config.runs:
-                break
+        for i in range(Config.runs):
+            pool = Pool(processes=100)
+            run = i + 1
             print("Starting experiment run: " + str(run))
             print("-----")
-            for instanceName, instance in library.items():
-                if not correctRestart:
-                    if instanceName == currentInstance:
-                        correctRestart = True
-                    continue
-                Config.jssp = JSSPFactory.generateJSSPFromFormat(instance)
-                print("Running normal hill climber algorithm " + instanceName)
-                allPopulationsHC, bestHC = Algorithm.hillClimberAlgorithm()
-                print("Running FFA hill climber algorithm " + instanceName)
-                allPopulationsFHC, bestFHC = Algorithm.frequencyAssignmentHillClimberAlgorithm()
 
-                results = results.append({'run': run, 'instance': instanceName,
-                                          'bestFMA': int(bestFHC.getObjectiveValue()),
-                                          'bestMA': int(bestHC.getObjectiveValue())},
-                                         ignore_index=True)
+            for name, instanceFormat in library.items():
+                instance = JSSPFactory.generateJSSPFromFormat(instanceFormat)
+                if not os.path.exists('files/output/hc/results/' + str(run) + "/" + name + "/hc.txt"):
+                    pool.apply_async(Experiments.runHillClimberAlgorithm, args=(False, name, instance, run))
+                if not os.path.exists('files/output/hc/results/' + str(run) + "/" + name + "/fhc.txt"):
+                    pool.apply_async(Experiments.runHillClimberAlgorithm, args=(True, name, instance, run))
+            pool.close()
+            pool.join()
 
-                print("Instance with name " + instanceName + " done.")
-                print("-----")
-                Experiments.writeFiles(allPopulationsHC, allPopulationsFHC, results, instanceName, run)
-            run += 1
-            print("-----")
+    @staticmethod
+    def runHillClimberAlgorithm(ffa, instanceName, instance, run):
+        if ffa:
+            print("Running FFA algorithm " + instanceName)
+            allPopulations, best = Algorithm.frequencyAssignmentHillClimberAlgorithm(instance, instanceName, run)
+            fileName = str(run) + "/" + instanceName + "/fhc.txt"
+            print("FFA algorithm " + instanceName + " done!")
+        else:
+            print("Running normal algorithm " + instanceName)
+            allPopulations, best = Algorithm.hillClimberAlgorithm(instance)
+            fileName = str(run) + "/" + instanceName + "/hc.txt"
+            print("Normal algorithm " + instanceName + " done!")
+
+        os.makedirs(os.path.dirname('files/output/hc/populations/' + fileName), exist_ok=True)
+        populationsWriteFile = open('files/output/hc/populations/' + fileName, 'w')
+        populationsWriteFile.write("\n".join(allPopulations))
+
+        os.makedirs(os.path.dirname('files/output/hc/results/' + fileName), exist_ok=True)
+        resultsWriteFile = open('files/output/hc/results/' + fileName, 'w')
+        resultsWriteFile.write(str(int(best.getObjectiveValue())))
 
     @staticmethod
     def restartValues():

@@ -40,7 +40,7 @@ class Util:
             if instanceName == '' and 'instance' in line:
                 instanceName = line.replace('instance', '').replace('\n', '').replace(' ', '')
                 continue
-            if 'instance' in line:
+            if ('instance' in line) or ('best known solution' in line):
                 copyLines = True
                 continue
             if '+++' in line and copyLines is True:
