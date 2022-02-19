@@ -5,4 +5,4 @@ class Config:
     amountBitSwaps = 10
     runs = 5
     timePerRun = 300
-    maxFunctionEvaluations = 2
+    maxFunctionEvaluations = 2 ** 30
