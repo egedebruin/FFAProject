@@ -40,7 +40,7 @@ class Algorithm:
         return allPopulations, best
 
     @staticmethod
-    def hillClimberAlgorithm(instance):
+    def hillClimberAlgorithm(instance, name, run):
         allPopulations = []
         population = GenotypeFactory.generateRandomSimpleEncodingPopulation(1, instance)
         best = population.individuals[0]
@@ -48,6 +48,8 @@ class Algorithm:
         functionEvaluations = 1
 
         while functionEvaluations < Config.maxFunctionEvaluations:
+            if functionEvaluations % 1000000 == 0:
+                print("Normal: On function evaluation " + str(functionEvaluations) + " for instance " + name + " in run " + str(run))
             newIndividual = population.individuals[0].randomSingleSwap()
 
             best = population.selectBest([best, newIndividual], 1)[0]
@@ -69,7 +71,7 @@ class Algorithm:
 
         while functionEvaluations < Config.maxFunctionEvaluations:
             if functionEvaluations % 1000000 == 0:
-                print("On function evaluation " + str(functionEvaluations) + " for instance " + name + " in run " + str(run))
+                print("FFA: On function evaluation " + str(functionEvaluations) + " for instance " + name + " in run " + str(run))
             newIndividual = population.individuals[0].randomSingleSwap()
 
             best = population.selectBest([best, newIndividual], 1)[0]

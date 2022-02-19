@@ -94,7 +94,7 @@ class Experiments:
             print("FFA algorithm " + instanceName + " done!")
         else:
             print("Running normal algorithm " + instanceName)
-            allPopulations, best = Algorithm.hillClimberAlgorithm(instance)
+            allPopulations, best = Algorithm.hillClimberAlgorithm(instance, instanceName, run)
             fileName = str(run) + "/" + instanceName + "/hc.txt"
             print("Normal algorithm " + instanceName + " done!")
 
