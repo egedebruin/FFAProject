@@ -89,18 +89,18 @@ class Experiments:
     def runHillClimberAlgorithm(ffa, instanceName, instance, run):
         if ffa:
             print("Running FFA algorithm " + instanceName)
-            allPopulations, best = Algorithm.frequencyAssignmentHillClimberAlgorithm(instance, instanceName, run)
+            allBest, best = Algorithm.frequencyAssignmentHillClimberAlgorithm(instance, instanceName, run)
             fileName = str(run) + "/" + instanceName + "/fhc.txt"
             print("FFA algorithm " + instanceName + " done!")
         else:
             print("Running normal algorithm " + instanceName)
-            allPopulations, best = Algorithm.hillClimberAlgorithm(instance, instanceName, run)
+            allBest, best = Algorithm.hillClimberAlgorithm(instance, instanceName, run)
             fileName = str(run) + "/" + instanceName + "/hc.txt"
             print("Normal algorithm " + instanceName + " done!")
 
         os.makedirs(os.path.dirname('files/output/hc/populations/' + fileName), exist_ok=True)
         populationsWriteFile = open('files/output/hc/populations/' + fileName, 'w')
-        populationsWriteFile.write("\n".join(allPopulations))
+        populationsWriteFile.write(str(allBest))
 
         os.makedirs(os.path.dirname('files/output/hc/results/' + fileName), exist_ok=True)
         resultsWriteFile = open('files/output/hc/results/' + fileName, 'w')

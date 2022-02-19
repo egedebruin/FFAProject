@@ -41,10 +41,10 @@ class Algorithm:
 
     @staticmethod
     def hillClimberAlgorithm(instance, name, run):
-        allPopulations = []
+        allBest = []
         population = GenotypeFactory.generateRandomSimpleEncodingPopulation(1, instance)
         best = population.individuals[0]
-        allPopulations.append(population.getIndividualsStringSingleIndividual())
+        allBest.append(best.getObjectiveValue())
         functionEvaluations = 1
 
         while functionEvaluations < Config.maxFunctionEvaluations:
@@ -53,20 +53,20 @@ class Algorithm:
             newIndividual = population.individuals[0].randomSingleSwap()
 
             best = population.selectBest([best, newIndividual], 1)[0]
+            allBest.append(best.getObjectiveValue())
 
             population.individuals = population.selectBestPreferOffspring([newIndividual])
-            allPopulations.append(population.getIndividualsStringSingleIndividual())
 
             functionEvaluations += 1
 
-        return allPopulations, best
+        return allBest, best
 
     @staticmethod
     def frequencyAssignmentHillClimberAlgorithm(instance, name, run):
-        allPopulations = []
+        allBest = []
         population = GenotypeFactory.generateRandomSimpleEncodingPopulation(1, instance)
         best = population.individuals[0]
-        allPopulations.append(population.getIndividualsStringSingleIndividual())
+        allBest.append(best.getObjectiveValue())
         functionEvaluations = 1
 
         while functionEvaluations < Config.maxFunctionEvaluations:
@@ -75,10 +75,10 @@ class Algorithm:
             newIndividual = population.individuals[0].randomSingleSwap()
 
             best = population.selectBest([best, newIndividual], 1)[0]
+            allBest.append(best.getObjectiveValue())
 
             population.individuals = population.selectLeastFrequentPreferOffspring([newIndividual])
-            allPopulations.append(population.getIndividualsStringSingleIndividual())
 
             functionEvaluations += 1
 
-        return allPopulations, best
+        return allBest, best
