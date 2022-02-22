@@ -53,12 +53,13 @@ class Algorithm:
             newIndividual = population.individuals[0].randomSingleSwap()
 
             best = population.selectBest([best, newIndividual], 1)[0]
-            if functionEvaluations % 1000 == 0:
-                Algorithm.writeBestToFile(name, run, best.getObjectiveValue(), False)
 
             population.individuals = population.selectBestPreferOffspring([newIndividual])
 
             functionEvaluations += 1
+            if functionEvaluations % 1000 == 0:
+                Algorithm.writeBestToFile(name, run, best.getObjectiveValue(), False)
+                Algorithm.writeCurrentToFile(name, run, False, functionEvaluations, population.individuals[0].sequence)
 
         return best
 
@@ -74,12 +75,13 @@ class Algorithm:
             newIndividual = population.individuals[0].randomSingleSwap()
 
             best = population.selectBest([best, newIndividual], 1)[0]
-            if functionEvaluations % 1000 == 0:
-                Algorithm.writeBestToFile(name, run, best.getObjectiveValue(), True)
 
             population.individuals = population.selectLeastFrequentPreferOffspring([newIndividual])
 
             functionEvaluations += 1
+            if functionEvaluations % 1000 == 0:
+                Algorithm.writeBestToFile(name, run, best.getObjectiveValue(), True)
+                Algorithm.writeCurrentToFile(name, run, True, functionEvaluations, population.individuals[0].sequence)
 
         return best
 
@@ -93,3 +95,14 @@ class Algorithm:
         os.makedirs(os.path.dirname('files/output/hc/populations/' + fileName), exist_ok=True)
         populationsWriteFile = open('files/output/hc/populations/' + fileName, 'a')
         populationsWriteFile.write(str(value) + ", ")
+
+    @staticmethod
+    def writeCurrentToFile(name, run, ffa, evals, sequence):
+        if ffa:
+            fileName = str(run) + "/" + name + "/current_fhc.txt"
+        else:
+            fileName = str(run) + "/" + name + "/current_hc.txt"
+
+        os.makedirs(os.path.dirname('files/output/hc/populations/' + fileName), exist_ok=True)
+        populationsWriteFile = open('files/output/hc/populations/' + fileName, 'w')
+        populationsWriteFile.write(str(evals) + ", " + str(sequence))
