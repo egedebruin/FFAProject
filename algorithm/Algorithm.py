@@ -1,3 +1,5 @@
+import os
+
 from Config import Config
 from genotype.GenotypeFactory import GenotypeFactory
 import time
@@ -41,10 +43,8 @@ class Algorithm:
 
     @staticmethod
     def hillClimberAlgorithm(instance, name, run):
-        allBest = []
         population = GenotypeFactory.generateRandomSimpleEncodingPopulation(1, instance)
         best = population.individuals[0]
-        allBest.append(best.getObjectiveValue())
         functionEvaluations = 1
 
         while functionEvaluations < Config.maxFunctionEvaluations:
@@ -53,20 +53,19 @@ class Algorithm:
             newIndividual = population.individuals[0].randomSingleSwap()
 
             best = population.selectBest([best, newIndividual], 1)[0]
-            allBest.append(best.getObjectiveValue())
+            if functionEvaluations % 1000 == 0:
+                Algorithm.writeBestToFile(name, run, best.getObjectiveValue(), False)
 
             population.individuals = population.selectBestPreferOffspring([newIndividual])
 
             functionEvaluations += 1
 
-        return allBest, best
+        return best
 
     @staticmethod
     def frequencyAssignmentHillClimberAlgorithm(instance, name, run):
-        allBest = []
         population = GenotypeFactory.generateRandomSimpleEncodingPopulation(1, instance)
         best = population.individuals[0]
-        allBest.append(best.getObjectiveValue())
         functionEvaluations = 1
 
         while functionEvaluations < Config.maxFunctionEvaluations:
@@ -75,10 +74,22 @@ class Algorithm:
             newIndividual = population.individuals[0].randomSingleSwap()
 
             best = population.selectBest([best, newIndividual], 1)[0]
-            allBest.append(best.getObjectiveValue())
+            if functionEvaluations % 1000 == 0:
+                Algorithm.writeBestToFile(name, run, best.getObjectiveValue(), True)
 
             population.individuals = population.selectLeastFrequentPreferOffspring([newIndividual])
 
             functionEvaluations += 1
 
-        return allBest, best
+        return best
+
+    @staticmethod
+    def writeBestToFile(name, run, value, ffa):
+        if ffa:
+            fileName = str(run) + "/" + name + "/fhc.txt"
+        else:
+            fileName = str(run) + "/" + name + "/hc.txt"
+
+        os.makedirs(os.path.dirname('files/output/hc/populations/' + fileName), exist_ok=True)
+        populationsWriteFile = open('files/output/hc/populations/' + fileName, 'a')
+        populationsWriteFile.write(str(value) + ", ")

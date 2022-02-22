@@ -71,7 +71,7 @@ class Experiments:
     @staticmethod
     def runHillClimberComparisonExperiment(library):
         for i in range(Config.runs):
-            pool = Pool(processes=100)
+            pool = Pool(processes=64)
             run = i + 1
             print("Starting experiment run: " + str(run))
             print("-----")
@@ -89,18 +89,14 @@ class Experiments:
     def runHillClimberAlgorithm(ffa, instanceName, instance, run):
         if ffa:
             print("Running FFA algorithm " + instanceName)
-            allBest, best = Algorithm.frequencyAssignmentHillClimberAlgorithm(instance, instanceName, run)
+            best = Algorithm.frequencyAssignmentHillClimberAlgorithm(instance, instanceName, run)
             fileName = str(run) + "/" + instanceName + "/fhc.txt"
             print("FFA algorithm " + instanceName + " done!")
         else:
             print("Running normal algorithm " + instanceName)
-            allBest, best = Algorithm.hillClimberAlgorithm(instance, instanceName, run)
+            best = Algorithm.hillClimberAlgorithm(instance, instanceName, run)
             fileName = str(run) + "/" + instanceName + "/hc.txt"
             print("Normal algorithm " + instanceName + " done!")
-
-        os.makedirs(os.path.dirname('files/output/hc/populations/' + fileName), exist_ok=True)
-        populationsWriteFile = open('files/output/hc/populations/' + fileName, 'w')
-        populationsWriteFile.write(str(allBest))
 
         os.makedirs(os.path.dirname('files/output/hc/results/' + fileName), exist_ok=True)
         resultsWriteFile = open('files/output/hc/results/' + fileName, 'w')
