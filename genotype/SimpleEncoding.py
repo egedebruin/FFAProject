@@ -57,16 +57,17 @@ class SimpleEncoding(Genotype, ABC):
         return Phenotype(resultMachineList, highestEndTime)
 
     def nSwap(self, n):
-        if self.isBestOfNeighbourhood:
-            return
-
         for i in range(n):
+            if self.isBestOfNeighbourhood:
+                return
             self.isBestOfNeighbourhood = True
 
             swaps = list(itertools.permutations(range(len(self.sequence)), 2))
             random.shuffle(swaps)
 
             for (firstIndex, secondIndex) in swaps:
+                if self.sequence[firstIndex] == self.sequence[secondIndex]:
+                    continue
                 newSimpleEncoding = self.singleSwap(firstIndex, secondIndex)
                 if newSimpleEncoding.__lt__(self):
                     self.sequence = newSimpleEncoding.sequence
