@@ -4,6 +4,8 @@ from Config import Config
 from genotype.GenotypeFactory import GenotypeFactory
 import time
 
+from genotype.SimpleEncoding import SimpleEncoding
+
 
 class Algorithm:
 
@@ -42,10 +44,11 @@ class Algorithm:
         return allPopulations, best
 
     @staticmethod
-    def hillClimberAlgorithm(instance, name, run):
+    def hillClimberAlgorithm(instance, name, run, functionEvaluations, startSequence):
         population = GenotypeFactory.generateRandomSimpleEncodingPopulation(1, instance)
+        if startSequence is not None:
+            population.individuals = [SimpleEncoding(startSequence, instance)]
         best = population.individuals[0]
-        functionEvaluations = 1
 
         while functionEvaluations < Config.maxFunctionEvaluations:
             if functionEvaluations % 1000000 == 0:
@@ -64,10 +67,11 @@ class Algorithm:
         return best
 
     @staticmethod
-    def frequencyAssignmentHillClimberAlgorithm(instance, name, run):
+    def frequencyAssignmentHillClimberAlgorithm(instance, name, run, functionEvaluations, startSequence):
         population = GenotypeFactory.generateRandomSimpleEncodingPopulation(1, instance)
+        if startSequence is not None:
+            population.individuals = [SimpleEncoding(startSequence, instance)]
         best = population.individuals[0]
-        functionEvaluations = 1
 
         while functionEvaluations < Config.maxFunctionEvaluations:
             if functionEvaluations % 1000000 == 0:

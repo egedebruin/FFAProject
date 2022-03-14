@@ -1,10 +1,7 @@
-from time import sleep
-
 from Config import Config
 from algorithm.Algorithm import Algorithm
 from genotype.GenotypeFactory import GenotypeFactory
 from jssp.JSSPFactory import JSSPFactory
-from multiprocessing import Process
 from multiprocessing import Pool
 import pandas as pd
 import os
@@ -89,18 +86,33 @@ class Experiments:
     def runHillClimberAlgorithm(ffa, instanceName, instance, run):
         if ffa:
             print("Running FFA algorithm " + instanceName)
-            best = Algorithm.frequencyAssignmentHillClimberAlgorithm(instance, instanceName, run)
+            functionEvaluations, startSequence = Experiments.restartValuesFromPopulationFile(True, instanceName, run)
+            best = Algorithm.frequencyAssignmentHillClimberAlgorithm(instance, instanceName, run, functionEvaluations, startSequence)
             fileName = str(run) + "/" + instanceName + "/fhc.txt"
             print("FFA algorithm " + instanceName + " done!")
         else:
             print("Running normal algorithm " + instanceName)
-            best = Algorithm.hillClimberAlgorithm(instance, instanceName, run)
+            functionEvaluations, startSequence = Experiments.restartValuesFromPopulationFile(False, instanceName, run)
+            best = Algorithm.hillClimberAlgorithm(instance, instanceName, run, functionEvaluations, startSequence)
             fileName = str(run) + "/" + instanceName + "/hc.txt"
             print("Normal algorithm " + instanceName + " done!")
 
         os.makedirs(os.path.dirname('files/output/hc/results/' + fileName), exist_ok=True)
         resultsWriteFile = open('files/output/hc/results/' + fileName, 'w')
         resultsWriteFile.write(str(int(best.getObjectiveValue())))
+
+    @staticmethod
+    def restartValuesFromPopulationFile(ffa, instanceName, run):
+        fileName = '/current_hc.txt'
+        if ffa:
+            fileName = '/current_fhc.txt'
+        if os.path.exists('files/output/hc/populations/' + str(run) + "/" + instanceName + fileName):
+            file = open('files/output/hc/populations/' + str(run) + "/" + instanceName + fileName)
+            line = file.readline().split(',', 1)
+            functionEvaluations = int(line[0])
+            individualSequence = list(map(int, line[1].replace('[', '').replace(']', '').split(',')))
+            return functionEvaluations, individualSequence
+        return 1, None
 
     @staticmethod
     def restartValues():
