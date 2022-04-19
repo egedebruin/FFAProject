@@ -114,13 +114,12 @@ class Experiments:
             if os.path.exists('files/output/hc/populations/' + str(run) + "/" + instanceName + "/fhc.txt"):
                 file = open('files/output/hc/populations/' + str(run) + "/" + instanceName + "/fhc.txt")
                 best = file.read().split(',')[-2]
-                print(best)
         if os.path.exists('files/output/hc/populations/' + str(run) + "/" + instanceName + fileName):
             file = open('files/output/hc/populations/' + str(run) + "/" + instanceName + fileName)
             line = file.readline().split(',', 1)
             functionEvaluations = int(line[0])
             individualSequence = list(map(int, line[1].replace('[', '').replace(']', '').split(',')))
-            return functionEvaluations, individualSequence
+            return functionEvaluations, individualSequence, best
         return 1, None, best
 
     @staticmethod
