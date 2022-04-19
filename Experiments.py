@@ -69,7 +69,7 @@ class Experiments:
     @staticmethod
     def runHillClimberComparisonExperiment(library):
         for i in range(Config.runs):
-            pool = Pool(processes=1)
+            pool = Pool(processes=16)
             run = i + 1
             print("Starting experiment run: " + str(run))
             print("-----")
