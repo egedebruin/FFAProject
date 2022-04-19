@@ -5,6 +5,7 @@ from jssp.JSSPFactory import JSSPFactory
 from multiprocessing import Pool
 import pandas as pd
 import os
+from filelock import FileLock
 
 
 class Experiments:
@@ -68,7 +69,7 @@ class Experiments:
     @staticmethod
     def runHillClimberComparisonExperiment(library):
         for i in range(Config.runs):
-            pool = Pool(processes=64)
+            pool = Pool(processes=1)
             run = i + 1
             print("Starting experiment run: " + str(run))
             print("-----")
@@ -84,35 +85,43 @@ class Experiments:
 
     @staticmethod
     def runHillClimberAlgorithm(ffa, instanceName, instance, run):
+        if Experiments.instanceIsTaken(instanceName):
+            return
         if ffa:
             print("Running FFA algorithm " + instanceName)
-            functionEvaluations, startSequence = Experiments.restartValuesFromPopulationFile(True, instanceName, run)
-            best = Algorithm.frequencyAssignmentHillClimberAlgorithm(instance, instanceName, run, functionEvaluations, startSequence)
+            functionEvaluations, startSequence, currentBest = Experiments.restartValuesFromPopulationFile(True, instanceName, run)
+            best = Algorithm.frequencyAssignmentHillClimberAlgorithm(instance, instanceName, run, functionEvaluations, startSequence, currentBest)
             fileName = str(run) + "/" + instanceName + "/fhc.txt"
             print("FFA algorithm " + instanceName + " done!")
         else:
             print("Running normal algorithm " + instanceName)
-            functionEvaluations, startSequence = Experiments.restartValuesFromPopulationFile(False, instanceName, run)
+            functionEvaluations, startSequence, currentBest = Experiments.restartValuesFromPopulationFile(False, instanceName, run)
             best = Algorithm.hillClimberAlgorithm(instance, instanceName, run, functionEvaluations, startSequence)
+            best = best.getObjectiveValue()
             fileName = str(run) + "/" + instanceName + "/hc.txt"
             print("Normal algorithm " + instanceName + " done!")
 
         os.makedirs(os.path.dirname('files/output/hc/results/' + fileName), exist_ok=True)
         resultsWriteFile = open('files/output/hc/results/' + fileName, 'w')
-        resultsWriteFile.write(str(int(best.getObjectiveValue())))
+        resultsWriteFile.write(str(int(best)))
 
     @staticmethod
     def restartValuesFromPopulationFile(ffa, instanceName, run):
         fileName = '/current_hc.txt'
+        best = 0
         if ffa:
             fileName = '/current_fhc.txt'
+            if os.path.exists('files/output/hc/populations/' + str(run) + "/" + instanceName + "/fhc.txt"):
+                file = open('files/output/hc/populations/' + str(run) + "/" + instanceName + "/fhc.txt")
+                best = file.read().split(',')[-2]
+                print(best)
         if os.path.exists('files/output/hc/populations/' + str(run) + "/" + instanceName + fileName):
             file = open('files/output/hc/populations/' + str(run) + "/" + instanceName + fileName)
             line = file.readline().split(',', 1)
             functionEvaluations = int(line[0])
             individualSequence = list(map(int, line[1].replace('[', '').replace(']', '').split(',')))
             return functionEvaluations, individualSequence
-        return 1, None
+        return 1, None, best
 
     @staticmethod
     def restartValues():
@@ -142,3 +151,17 @@ class Experiments:
         dataFrame['bestFMA'] = dataFrame['bestFMA'].astype('int')
         dataFrame['bestMA'] = dataFrame['bestMA'].astype('int')
         dataFrame.to_csv('files/output/results.csv', index=False)
+
+    @staticmethod
+    def instanceIsTaken(instanceName):
+        with FileLock('files/taken.txt.lock'):
+            file = open('files/taken.txt', 'r')
+            if instanceName in file.read():
+                file.close()
+                return True
+            file.close()
+
+            file = open('files/taken.txt', 'a')
+            file.write(', ' + instanceName)
+            file.close()
+            return False

@@ -49,6 +49,7 @@ class Algorithm:
         if startSequence is not None:
             population.individuals = [SimpleEncoding(startSequence, instance)]
         best = population.individuals[0]
+        Algorithm.writeBestToFile(name, run, best.getObjectiveValue(), True)
 
         while functionEvaluations < Config.maxFunctionEvaluations:
             if functionEvaluations % 1000000 == 0:
@@ -67,24 +68,27 @@ class Algorithm:
         return best
 
     @staticmethod
-    def frequencyAssignmentHillClimberAlgorithm(instance, name, run, functionEvaluations, startSequence):
+    def frequencyAssignmentHillClimberAlgorithm(instance, name, run, functionEvaluations, startSequence, best):
         population = GenotypeFactory.generateRandomSimpleEncodingPopulation(1, instance)
         if startSequence is not None:
             population.individuals = [SimpleEncoding(startSequence, instance)]
-        best = population.individuals[0]
+        if best == 0:
+            best = population.individuals[0].getObjectiveValue()
+        Algorithm.writeBestToFile(name, run, best.getObjectiveValue(), True)
 
         while functionEvaluations < Config.maxFunctionEvaluations:
             if functionEvaluations % 1000000 == 0:
                 print("FFA: On function evaluation " + str(functionEvaluations) + " for instance " + name + " in run " + str(run))
             newIndividual = population.individuals[0].randomSingleSwap()
 
-            best = population.selectBest([best, newIndividual], 1)[0]
+            if newIndividual.getObjectiveValue() < best:
+                best = newIndividual.getObjectiveValue()
 
             population.individuals = population.selectLeastFrequentPreferOffspring([newIndividual])
 
             functionEvaluations += 1
             if functionEvaluations % 1000 == 0:
-                Algorithm.writeBestToFile(name, run, best.getObjectiveValue(), True)
+                Algorithm.writeBestToFile(name, run, best, True)
                 Algorithm.writeCurrentToFile(name, run, True, functionEvaluations, population.individuals[0].sequence)
 
         return best
