@@ -85,7 +85,7 @@ class Experiments:
 
     @staticmethod
     def runHillClimberAlgorithm(ffa, instanceName, instance, run):
-        if Experiments.instanceIsTaken(instanceName):
+        if Experiments.instanceIsTaken(instanceName, ffa):
             return
         if ffa:
             print("Running FFA algorithm " + instanceName)
@@ -153,15 +153,18 @@ class Experiments:
         dataFrame.to_csv('files/output/results.csv', index=False)
 
     @staticmethod
-    def instanceIsTaken(instanceName):
+    def instanceIsTaken(instanceName, ffa):
+        text = 'hc'
+        if ffa:
+            text = 'ffa'
         with FileLock('files/taken.txt.lock'):
             file = open('files/taken.txt', 'r')
-            if instanceName in file.read():
+            if instanceName + text in file.read():
                 file.close()
                 return True
             file.close()
 
             file = open('files/taken.txt', 'a')
-            file.write(', ' + instanceName)
+            file.write(', ' + instanceName + text)
             file.close()
             return False
