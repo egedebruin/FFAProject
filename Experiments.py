@@ -77,11 +77,9 @@ class Experiments:
             for name, instanceFormat in library.items():
                 instance = JSSPFactory.generateJSSPFromFormat(instanceFormat)
                 if not os.path.exists('files/output/hc/results/' + str(run) + "/" + name + "/hc.txt"):
-                    x = pool.apply_async(Experiments.runHillClimberAlgorithm, args=(False, name, instance, run))
-                    x.get()
+                    pool.apply_async(Experiments.runHillClimberAlgorithm, args=(False, name, instance, run))
                 if not os.path.exists('files/output/hc/results/' + str(run) + "/" + name + "/fhc.txt"):
-                    y = pool.apply_async(Experiments.runHillClimberAlgorithm, args=(True, name, instance, run))
-                    y.get()
+                    pool.apply_async(Experiments.runHillClimberAlgorithm, args=(True, name, instance, run))
             pool.close()
             pool.join()
 
@@ -92,7 +90,7 @@ class Experiments:
         if ffa:
             print("Running FFA algorithm " + instanceName)
             functionEvaluations, startSequence, currentBest = Experiments.restartValuesFromPopulationFile(True, instanceName, run)
-            best = Algorithm.frequencyAssignmentHillClimberAlgorithm(instance, instanceName, run, functionEvaluations, startSequence, currentBest)
+            best = Algorithm.frequencyAssignmentHillClimberAlgorithm(instance, instanceName, run, functionEvaluations, startSequence, int(currentBest))
             fileName = str(run) + "/" + instanceName + "/fhc.txt"
             print("FFA algorithm " + instanceName + " done!")
         else:
