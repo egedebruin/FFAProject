@@ -77,9 +77,11 @@ class Experiments:
             for name, instanceFormat in library.items():
                 instance = JSSPFactory.generateJSSPFromFormat(instanceFormat)
                 if not os.path.exists('files/output/hc/results/' + str(run) + "/" + name + "/hc.txt"):
-                    pool.apply_async(Experiments.runHillClimberAlgorithm, args=(False, name, instance, run))
+                    x = pool.apply_async(Experiments.runHillClimberAlgorithm, args=(False, name, instance, run))
+                    x.get()
                 if not os.path.exists('files/output/hc/results/' + str(run) + "/" + name + "/fhc.txt"):
-                    pool.apply_async(Experiments.runHillClimberAlgorithm, args=(True, name, instance, run))
+                    y = pool.apply_async(Experiments.runHillClimberAlgorithm, args=(True, name, instance, run))
+                    y.get()
             pool.close()
             pool.join()
 
