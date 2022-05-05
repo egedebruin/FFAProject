@@ -5,7 +5,9 @@ from jssp.JSSPFactory import JSSPFactory
 from multiprocessing import Pool
 import pandas as pd
 import os
+import json
 from filelock import FileLock
+from collections import defaultdict
 
 
 class Experiments:
@@ -69,7 +71,7 @@ class Experiments:
     @staticmethod
     def runHillClimberComparisonExperiment(library):
         for i in range(Config.runs):
-            pool = Pool(processes=16)
+            pool = Pool(processes=1)
             run = i + 1
             print("Starting experiment run: " + str(run))
             print("-----")
@@ -89,13 +91,13 @@ class Experiments:
             return
         if ffa:
             print("Running FFA algorithm " + instanceName)
-            functionEvaluations, startSequence, currentBest = Experiments.restartValuesFromPopulationFile(True, instanceName, run)
-            best = Algorithm.frequencyAssignmentHillClimberAlgorithm(instance, instanceName, run, functionEvaluations, startSequence, int(currentBest))
+            functionEvaluations, startSequence, currentBest, frequency = Experiments.restartValuesFromPopulationFile(True, instanceName, run)
+            best = Algorithm.frequencyAssignmentHillClimberAlgorithm(instance, instanceName, run, functionEvaluations, startSequence, int(currentBest), frequency)
             fileName = str(run) + "/" + instanceName + "/fhc.txt"
             print("FFA algorithm " + instanceName + " done!")
         else:
             print("Running normal algorithm " + instanceName)
-            functionEvaluations, startSequence, currentBest = Experiments.restartValuesFromPopulationFile(False, instanceName, run)
+            functionEvaluations, startSequence, currentBest, frequency = Experiments.restartValuesFromPopulationFile(False, instanceName, run)
             best = Algorithm.hillClimberAlgorithm(instance, instanceName, run, functionEvaluations, startSequence)
             best = best.getObjectiveValue()
             fileName = str(run) + "/" + instanceName + "/hc.txt"
@@ -109,6 +111,7 @@ class Experiments:
     def restartValuesFromPopulationFile(ffa, instanceName, run):
         fileName = '/current_hc.txt'
         best = 0
+        frequency = None
         if ffa:
             fileName = '/current_fhc.txt'
             if os.path.exists('files/output/hc/populations/' + str(run) + "/" + instanceName + "/fhc.txt"):
@@ -117,10 +120,15 @@ class Experiments:
         if os.path.exists('files/output/hc/populations/' + str(run) + "/" + instanceName + fileName):
             file = open('files/output/hc/populations/' + str(run) + "/" + instanceName + fileName)
             line = file.readline().split(',', 1)
+
+            if ffa:
+                secondLine = file.readline()
+                frequency = defaultdict(lambda: 0, json.loads(secondLine))
+
             functionEvaluations = int(line[0])
             individualSequence = list(map(int, line[1].replace('[', '').replace(']', '').split(',')))
-            return functionEvaluations, individualSequence, best
-        return 1, None, best
+            return functionEvaluations, individualSequence, best, frequency
+        return 1, None, best, frequency
 
     @staticmethod
     def restartValues():

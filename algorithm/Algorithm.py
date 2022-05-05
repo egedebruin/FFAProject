@@ -3,6 +3,7 @@ import os
 from Config import Config
 from genotype.GenotypeFactory import GenotypeFactory
 import time
+import json
 
 from genotype.SimpleEncoding import SimpleEncoding
 
@@ -68,10 +69,13 @@ class Algorithm:
         return best
 
     @staticmethod
-    def frequencyAssignmentHillClimberAlgorithm(instance, name, run, functionEvaluations, startSequence, best):
+    def frequencyAssignmentHillClimberAlgorithm(instance, name, run, functionEvaluations, startSequence, best, frequency):
         population = GenotypeFactory.generateRandomSimpleEncodingPopulation(1, instance)
         if startSequence is not None:
             population.individuals = [SimpleEncoding(startSequence, instance)]
+        if frequency is not None:
+            population.frequency = frequency
+            print(population.frequency)
         if best == 0:
             best = population.individuals[0].getObjectiveValue()
         Algorithm.writeBestToFile(name, run, best, True)
@@ -89,7 +93,7 @@ class Algorithm:
             functionEvaluations += 1
             if functionEvaluations % 1000 == 0:
                 Algorithm.writeBestToFile(name, run, best, True)
-                Algorithm.writeCurrentToFile(name, run, True, functionEvaluations, population.individuals[0].sequence)
+                Algorithm.writeCurrentToFile(name, run, True, functionEvaluations, population.individuals[0].sequence, population.frequency)
 
         return best
 
@@ -105,12 +109,14 @@ class Algorithm:
         populationsWriteFile.write(str(value) + ", ")
 
     @staticmethod
-    def writeCurrentToFile(name, run, ffa, evals, sequence):
+    def writeCurrentToFile(name, run, ffa, evals, sequence, frequency=None):
         if ffa:
             fileName = str(run) + "/" + name + "/current_fhc.txt"
+            text = str(evals) + ", " + str(sequence) + "\n" + json.dumps(frequency)
         else:
             fileName = str(run) + "/" + name + "/current_hc.txt"
+            text = str(evals) + ", " + str(sequence)
 
         os.makedirs(os.path.dirname('files/output/hc/populations/' + fileName), exist_ok=True)
         populationsWriteFile = open('files/output/hc/populations/' + fileName, 'w')
-        populationsWriteFile.write(str(evals) + ", " + str(sequence))
+        populationsWriteFile.write(text)
