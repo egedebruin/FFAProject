@@ -75,7 +75,6 @@ class Algorithm:
             population.individuals = [SimpleEncoding(startSequence, instance)]
         if frequency is not None:
             population.frequency = frequency
-            print(population.frequency)
         if best == 0:
             best = population.individuals[0].getObjectiveValue()
         Algorithm.writeBestToFile(name, run, best, True)
