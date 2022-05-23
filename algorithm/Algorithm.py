@@ -50,7 +50,8 @@ class Algorithm:
         if startSequence is not None:
             population.individuals = [SimpleEncoding(startSequence, instance)]
         best = population.individuals[0]
-        Algorithm.writeBestToFile(name, run, best.getObjectiveValue(), True)
+        if startSequence is None:
+            Algorithm.writeBestToFile(name, run, best.getObjectiveValue(), True)
 
         while functionEvaluations < Config.maxFunctionEvaluations:
             if functionEvaluations % 1000000 == 0:
@@ -77,7 +78,7 @@ class Algorithm:
             population.frequency = frequency
         if best == 0:
             best = population.individuals[0].getObjectiveValue()
-        Algorithm.writeBestToFile(name, run, best, True)
+            Algorithm.writeBestToFile(name, run, best, True)
 
         while functionEvaluations < Config.maxFunctionEvaluations:
             if functionEvaluations % 1000000 == 0:
