@@ -51,7 +51,7 @@ class Algorithm:
             population.individuals = [SimpleEncoding(startSequence, instance)]
         best = population.individuals[0]
         if startSequence is None:
-            Algorithm.writeBestToFile(name, run, best.getObjectiveValue(), True)
+            Algorithm.writeBestToFile(name, run, best.getObjectiveValue(), False)
 
         while functionEvaluations < Config.maxFunctionEvaluations:
             if functionEvaluations % 1000000 == 0:
