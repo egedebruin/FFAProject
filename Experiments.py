@@ -6,7 +6,6 @@ from multiprocessing import Pool
 import pandas as pd
 import os
 import json
-import itertools
 from filelock import FileLock
 from collections import defaultdict
 
@@ -37,24 +36,6 @@ class Experiments:
 
         print("Experiments finished")
         return executionTimes, bestPhenotype, bestExecutionTime
-
-    @staticmethod
-    def goThroughEntireSearchSpace():
-        genotype = GenotypeFactory.generateInitialSimpleEncoding()
-        permutations = list(itertools.permutations(genotype.sequence))
-        best = 10000
-        bestPhenotype = None
-
-        for permutation in permutations:
-            genotype.sequence = permutation
-            genotype.objectiveValue = 0
-            if genotype.getObjectiveValue() < best:
-                print(genotype.sequence)
-                print(genotype.getObjectiveValue())
-                best = genotype.getObjectiveValue()
-                bestPhenotype = genotype.toPhenotype()
-
-        return bestPhenotype
 
     @staticmethod
     def runComparisonExperiment(library):
