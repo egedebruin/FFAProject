@@ -1,5 +1,6 @@
 import random
 import pandas as pd
+import math
 from collections import defaultdict
 
 from Config import Config
@@ -75,6 +76,29 @@ class Population:
         if self.frequency[offspring[0].getObjectiveValue()] <= self.frequency[self.individuals[0].getObjectiveValue()]:
             return offspring
         return self.individuals
+
+    def getMinimumAndMaximumObjectiveValue(self):
+        minimum = math.inf
+        maximum = 0
+        for individual in self.individuals:
+            if individual.getObjectiveValue() > maximum:
+                maximum = individual.getObjectiveValue()
+            if individual.getObjectiveValue() < minimum:
+                minimum = individual.getObjectiveValue()
+
+        return minimum, maximum
+
+    def getMinimumAndMaximumFFAValue(self):
+        # TODO: This.
+        minimum = math.inf
+        maximum = 0
+        for individual in self.individuals:
+            if individual.getObjectiveValue() > maximum:
+                maximum = individual.getObjectiveValue()
+            if individual.getObjectiveValue() < minimum:
+                minimum = individual.getObjectiveValue()
+
+        return minimum, maximum
 
     def getIndividualsString(self):
         result = ''

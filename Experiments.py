@@ -132,6 +132,8 @@ class Experiments:
 
         Experiments.writeBestResults(fileName, best)
 
+    # TODO: Create PPA experiment functions
+
     @staticmethod
     def writeBestResults(fileName, best):
         os.makedirs(os.path.dirname(Config.resultFolder + fileName), exist_ok=True)
@@ -154,7 +156,8 @@ class Experiments:
 
     @staticmethod
     def writeFiles(allPopulationsMA, allPopulationsFMA, dataFrame, instanceName, run):
-        os.makedirs(os.path.dirname('files/output/populations/' + str(run) + "/" + instanceName + "/placeholder.txt"), exist_ok=True)
+        os.makedirs(os.path.dirname('files/output/populations/' + str(run) + "/" + instanceName + "/placeholder.txt"),
+                    exist_ok=True)
         maWriteFile = open('files/output/populations/' + str(run) + "/" + instanceName + "/maPopulations.txt",
                            'w')
         maWriteFile.write("\n".join(allPopulationsMA))

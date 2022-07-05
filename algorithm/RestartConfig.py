@@ -36,3 +36,5 @@ class RestartConfig:
             self.frequencyTable = defaultdict(lambda: 0, json.loads(secondLine))
             self.functionEvaluations = int(line[0])
             self.currentPopulation = list(map(int, line[1].replace('[', '').replace(']', '').split(',')))
+
+    #TODO: Get restart values for PPA

@@ -2,6 +2,8 @@ class Config:
     jssp = None
     populationSize = 16
     offspringSize = 16
+    maxOffspring = 5
+    # TODO: Think of good populationSize and maxOffspring
     amountBitSwaps = 10
     runs = 1
     timePerRun = 300

@@ -1,6 +1,6 @@
 import itertools
+import math
 import random
-import time
 from abc import ABC
 from collections import defaultdict
 
@@ -109,3 +109,13 @@ class SimpleEncoding(Genotype, ABC):
         if self.objectiveValue == 0:
             self.objectiveValue = self.toPhenotype().getObjectiveValue()
         return self.objectiveValue
+
+    def getPpaFitnessValueStandard(self, minimum, maximum):
+        return self._getPpaFitnessValue(minimum, maximum, self.getObjectiveValue())
+
+    @staticmethod
+    def _getPpaFitnessValue(minimum, maximum, value):
+        normalised = float((maximum - value) / (maximum - minimum))
+
+        ppaFitness = 0.5 * (math.tanh(4 * normalised - 2) + 1)
+        return ppaFitness
