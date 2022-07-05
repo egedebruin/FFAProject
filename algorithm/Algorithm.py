@@ -45,14 +45,20 @@ class Algorithm:
         return allPopulations, best
 
     @staticmethod
-    def hillClimberAlgorithm(instance, name, run, functionEvaluations, startSequence):
-        population = GenotypeFactory.generateRandomSimpleEncodingPopulation(1, instance)
-        if startSequence is not None:
-            population.individuals = [SimpleEncoding(startSequence, instance)]
-        best = population.individuals[0]
-        if startSequence is None:
-            Algorithm.writeBestToFile(name, run, best.getObjectiveValue(), False)
+    def hillClimberAlgorithm(instance, name, run, restartConfig):
+        bestFileName = '/hc.txt'
+        currentPopulationFileName = '/current_hc.txt'
 
+        population = GenotypeFactory.generateRandomSimpleEncodingPopulation(1, instance)
+        if restartConfig.currentPopulation is not None:
+            population.individuals = [SimpleEncoding(restartConfig.currentPopulation, instance)]
+
+        best = population.individuals[0]
+
+        if restartConfig.currentPopulation is None:
+            Algorithm.writeBestToFile(name, run, best.getObjectiveValue(), bestFileName)
+
+        functionEvaluations = restartConfig.functionEvaluations
         while functionEvaluations < Config.maxFunctionEvaluations:
             if functionEvaluations % 1000000 == 0:
                 print("Normal: On function evaluation " + str(functionEvaluations) + " for instance " + name + " in run " + str(run))
@@ -64,21 +70,30 @@ class Algorithm:
 
             functionEvaluations += 1
             if functionEvaluations % 1000 == 0:
-                Algorithm.writeBestToFile(name, run, best.getObjectiveValue(), False)
-                Algorithm.writeCurrentToFile(name, run, False, functionEvaluations, population.individuals[0].sequence)
+                Algorithm.writeBestToFile(name, run, best, bestFileName)
+                Algorithm.writeCurrentPopulationToFile(name, run, currentPopulationFileName, functionEvaluations,
+                                                       population, population.frequency)
 
         return best
 
     @staticmethod
-    def frequencyAssignmentHillClimberAlgorithm(instance, name, run, functionEvaluations, startSequence, best, frequency):
+    def frequencyAssignmentHillClimberAlgorithm(instance, name, run, restartConfig):
+        bestFileName = '/fhc.txt'
+        currentPopulationFileName = '/current_fhc.txt'
+
         population = GenotypeFactory.generateRandomSimpleEncodingPopulation(1, instance)
-        if startSequence is not None:
-            population.individuals = [SimpleEncoding(startSequence, instance)]
-        if frequency is not None:
-            population.frequency = frequency
-        if best == 0:
+        if restartConfig.currentPopulation is not None:
+            population.individuals = [SimpleEncoding(restartConfig.currentPopulation, instance)]
+
+        if restartConfig.frequencyTable is not None:
+            population.frequency = restartConfig.frequencyTable
+
+        best = restartConfig.currentBest
+        if restartConfig.currentBest == 0:
             best = population.individuals[0].getObjectiveValue()
-            Algorithm.writeBestToFile(name, run, best, True)
+            Algorithm.writeBestToFile(name, run, best, bestFileName)
+
+        functionEvaluations = restartConfig.functionEvaluations
 
         while functionEvaluations < Config.maxFunctionEvaluations:
             if functionEvaluations % 1000000 == 0:
@@ -92,31 +107,24 @@ class Algorithm:
 
             functionEvaluations += 1
             if functionEvaluations % 1000 == 0:
-                Algorithm.writeBestToFile(name, run, best, True)
-                Algorithm.writeCurrentToFile(name, run, True, functionEvaluations, population.individuals[0].sequence, population.frequency)
+                Algorithm.writeBestToFile(name, run, best, bestFileName)
+                Algorithm.writeCurrentPopulationToFile(name, run, currentPopulationFileName, functionEvaluations, population, population.frequency)
 
         return best
 
     @staticmethod
-    def writeBestToFile(name, run, value, ffa):
-        if ffa:
-            fileName = str(run) + "/" + name + "/fhc.txt"
-        else:
-            fileName = str(run) + "/" + name + "/hc.txt"
+    def writeBestToFile(name, run, value, endFileName):
+        fileName = str(run) + "/" + name + endFileName
 
-        os.makedirs(os.path.dirname('files/output/hc/populations/' + fileName), exist_ok=True)
-        populationsWriteFile = open('files/output/hc/populations/' + fileName, 'a')
+        os.makedirs(os.path.dirname(Config.intermediateFolder + fileName), exist_ok=True)
+        populationsWriteFile = open(Config.intermediateFolder + fileName, 'a')
         populationsWriteFile.write(str(value) + ", ")
 
     @staticmethod
-    def writeCurrentToFile(name, run, ffa, evals, sequence, frequency=None):
-        if ffa:
-            fileName = str(run) + "/" + name + "/current_fhc.txt"
-            text = str(evals) + ", " + str(sequence) + "\n" + json.dumps(frequency)
-        else:
-            fileName = str(run) + "/" + name + "/current_hc.txt"
-            text = str(evals) + ", " + str(sequence)
+    def writeCurrentPopulationToFile(name, run, endFileName, evaluations, population, frequency=None):
+        fileName = str(run) + "/" + name + endFileName
+        text = str(evaluations) + ", " + population.getIndividualsString() + "\n" + json.dumps(frequency)
 
-        os.makedirs(os.path.dirname('files/output/hc/populations/' + fileName), exist_ok=True)
-        populationsWriteFile = open('files/output/hc/populations/' + fileName, 'w')
+        os.makedirs(os.path.dirname(Config.intermediateFolder + fileName), exist_ok=True)
+        populationsWriteFile = open(Config.intermediateFolder + fileName, 'w')
         populationsWriteFile.write(text)

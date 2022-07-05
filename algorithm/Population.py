@@ -79,11 +79,5 @@ class Population:
     def getIndividualsString(self):
         result = ''
         for individual in self.individuals:
-            result += ';' + ",".join(str(bit) for bit in individual.sequence)
-        return result
-
-    def getIndividualsStringSingleIndividual(self):
-        result = ''
-        for individual in self.individuals:
-            result = str(individual.sequence)
-        return result
+            result += ';' + str(individual.sequence)
+        return result[1:]

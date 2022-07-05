@@ -1,5 +1,6 @@
 from Config import Config
 from algorithm.Algorithm import Algorithm
+from algorithm.RestartConfig import RestartConfig
 from genotype.GenotypeFactory import GenotypeFactory
 from jssp.JSSPFactory import JSSPFactory
 from multiprocessing import Pool
@@ -90,7 +91,7 @@ class Experiments:
     @staticmethod
     def runHillClimberComparisonExperiment(library):
         for i in range(Config.runs):
-            pool = Pool(processes=16)
+            pool = Pool(processes=Config.poolProcesses)
             run = i + 1
             print("Starting experiment run: " + str(run))
             print("-----")
@@ -98,56 +99,44 @@ class Experiments:
             for name, instanceFormat in library.items():
                 instance = JSSPFactory.generateJSSPFromFormat(instanceFormat)
                 if not os.path.exists('files/output/hc/results/' + str(run) + "/" + name + "/hc.txt"):
-                    pool.apply_async(Experiments.runHillClimberAlgorithm, args=(False, name, instance, run))
+                    pool.apply_async(Experiments.runHillClimberAlgorithm, args=(name, instance, run))
                 if not os.path.exists('files/output/hc/results/' + str(run) + "/" + name + "/fhc.txt"):
-                    pool.apply_async(Experiments.runHillClimberAlgorithm, args=(True, name, instance, run))
+                    pool.apply_async(Experiments.runFFAHillClimberAlgorithm, args=(name, instance, run))
             pool.close()
             pool.join()
 
     @staticmethod
-    def runHillClimberAlgorithm(ffa, instanceName, instance, run):
-        if Experiments.instanceIsTaken(instanceName, ffa):
+    def runHillClimberAlgorithm(instanceName, instance, run):
+        if Experiments.instanceIsTaken(instanceName, 'hc'):
             return
-        if ffa:
-            print("Running FFA algorithm " + instanceName)
-            functionEvaluations, startSequence, currentBest, frequency = Experiments.restartValuesFromPopulationFile(True, instanceName, run)
-            best = Algorithm.frequencyAssignmentHillClimberAlgorithm(instance, instanceName, run, functionEvaluations, startSequence, int(currentBest), frequency)
-            fileName = str(run) + "/" + instanceName + "/fhc.txt"
-            print("FFA algorithm " + instanceName + " done!")
-        else:
-            print("Running normal algorithm " + instanceName)
-            functionEvaluations, startSequence, currentBest, frequency = Experiments.restartValuesFromPopulationFile(False, instanceName, run)
-            best = Algorithm.hillClimberAlgorithm(instance, instanceName, run, functionEvaluations, startSequence)
-            best = best.getObjectiveValue()
-            fileName = str(run) + "/" + instanceName + "/hc.txt"
-            print("Normal algorithm " + instanceName + " done!")
+        print("Running normal algorithm " + instanceName)
+        restartConfig = RestartConfig()
+        restartConfig.setRestartValuesFFAHillClimber(instanceName, run)
+        best = Algorithm.frequencyAssignmentHillClimberAlgorithm(instance, instanceName, run, restartConfig)
+        best = best.getObjectiveValue()
+        fileName = str(run) + "/" + instanceName + "/hc.txt"
+        print("Normal algorithm " + instanceName + " done!")
 
-        os.makedirs(os.path.dirname('files/output/hc/results/' + fileName), exist_ok=True)
-        resultsWriteFile = open('files/output/hc/results/' + fileName, 'w')
-        resultsWriteFile.write(str(int(best)))
+        Experiments.writeBestResults(fileName, best)
 
     @staticmethod
-    def restartValuesFromPopulationFile(ffa, instanceName, run):
-        fileName = '/current_hc.txt'
-        best = 0
-        frequency = None
-        if ffa:
-            fileName = '/current_fhc.txt'
-            if os.path.exists('files/output/hc/populations/' + str(run) + "/" + instanceName + "/fhc.txt"):
-                file = open('files/output/hc/populations/' + str(run) + "/" + instanceName + "/fhc.txt")
-                best = file.read().split(',')[-2]
-        if os.path.exists('files/output/hc/populations/' + str(run) + "/" + instanceName + fileName):
-            file = open('files/output/hc/populations/' + str(run) + "/" + instanceName + fileName)
-            line = file.readline().split(',', 1)
+    def runFFAHillClimberAlgorithm(instanceName, instance, run):
+        if Experiments.instanceIsTaken(instanceName, 'ffa'):
+            return
+        print("Running FFA algorithm " + instanceName)
+        restartConfig = RestartConfig()
+        restartConfig.setRestartValuesFFAHillClimber(instanceName, run)
+        best = Algorithm.frequencyAssignmentHillClimberAlgorithm(instance, instanceName, run, restartConfig)
+        fileName = str(run) + "/" + instanceName + "/fhc.txt"
+        print("FFA algorithm " + instanceName + " done!")
 
-            if ffa:
-                secondLine = file.readline()
-                frequency = defaultdict(lambda: 0, json.loads(secondLine))
+        Experiments.writeBestResults(fileName, best)
 
-            functionEvaluations = int(line[0])
-            individualSequence = list(map(int, line[1].replace('[', '').replace(']', '').split(',')))
-            return functionEvaluations, individualSequence, best, frequency
-        return 1, None, best, frequency
+    @staticmethod
+    def writeBestResults(fileName, best):
+        os.makedirs(os.path.dirname(Config.resultFolder + fileName), exist_ok=True)
+        resultsWriteFile = open(Config.resultFolder + fileName, 'w')
+        resultsWriteFile.write(str(int(best)))
 
     @staticmethod
     def restartValues():
@@ -179,18 +168,15 @@ class Experiments:
         dataFrame.to_csv('files/output/results.csv', index=False)
 
     @staticmethod
-    def instanceIsTaken(instanceName, ffa):
-        text = 'hc'
-        if ffa:
-            text = 'ffa'
+    def instanceIsTaken(instanceName, algorithmType):
         with FileLock('files/taken.txt.lock'):
             file = open('files/taken.txt', 'r')
-            if instanceName + text in file.read():
+            if instanceName + algorithmType in file.read():
                 file.close()
                 return True
             file.close()
 
             file = open('files/taken.txt', 'a')
-            file.write(', ' + instanceName + text)
+            file.write(', ' + instanceName + algorithmType)
             file.close()
             return False

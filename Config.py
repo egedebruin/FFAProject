@@ -6,3 +6,6 @@ class Config:
     runs = 1
     timePerRun = 300
     maxFunctionEvaluations = 2 ** 30
+    poolProcesses = 1
+    resultFolder = 'files/output/hc/results/'
+    intermediateFolder = 'files/output/hc/populations/'
