@@ -1,5 +1,6 @@
 from Config import Config
 from algorithm.Algorithm import Algorithm
+from algorithm.PpaAlgorithm import PpaAlgorithm
 from algorithm.RestartConfig import RestartConfig
 from genotype.GenotypeFactory import GenotypeFactory
 from jssp.JSSPFactory import JSSPFactory
@@ -98,9 +99,9 @@ class Experiments:
 
             for name, instanceFormat in library.items():
                 instance = JSSPFactory.generateJSSPFromFormat(instanceFormat)
-                if not os.path.exists('files/output/hc/results/' + str(run) + "/" + name + "/hc.txt"):
+                if not os.path.exists(Config.resultFolder+ str(run) + "/" + name + "/hc.txt"):
                     pool.apply_async(Experiments.runHillClimberAlgorithm, args=(name, instance, run))
-                if not os.path.exists('files/output/hc/results/' + str(run) + "/" + name + "/fhc.txt"):
+                if not os.path.exists(Config.resultFolder + str(run) + "/" + name + "/fhc.txt"):
                     pool.apply_async(Experiments.runFFAHillClimberAlgorithm, args=(name, instance, run))
             pool.close()
             pool.join()
@@ -132,7 +133,66 @@ class Experiments:
 
         Experiments.writeBestResults(fileName, best)
 
-    # TODO: Create PPA experiment functions
+    @staticmethod
+    def runPpaComparisonExperiment(library):
+        for i in range(Config.runs):
+            pool = Pool(processes=Config.poolProcesses)
+            run = i + 1
+            print("Starting experiment run: " + str(run))
+            print("-----")
+
+            for name, instanceFormat in library.items():
+                instance = JSSPFactory.generateJSSPFromFormat(instanceFormat)
+                if not os.path.exists(Config.resultFolder + str(run) + "/" + name + "/ppa.txt"):
+                    pool.apply_async(Experiments.runHillClimberAlgorithm, args=(name, instance, run))
+                if not os.path.exists(Config.resultFolder + str(run) + "/" + name + "/ffaSelectPpa.txt"):
+                    pool.apply_async(Experiments.runFFAHillClimberAlgorithm, args=(name, instance, run))
+                if not os.path.exists(Config.resultFolder + str(run) + "/" + name + "/ffaCompletePpa.txt"):
+                    pool.apply_async(Experiments.runFFAHillClimberAlgorithm, args=(name, instance, run))
+            pool.close()
+            pool.join()
+
+    @staticmethod
+    def runPpaAlgorithm(instanceName, instance, run):
+        if Experiments.instanceIsTaken(instanceName, 'ppa'):
+            return
+        print("Running ppa algorithm " + instanceName)
+        restartConfig = RestartConfig()
+        restartConfig.setRestartValuesPpa(instanceName, run, '/ppaCurrent.txt')
+        best = PpaAlgorithm.ppaAlgorithm(instance, instanceName, run, restartConfig)
+        best = best.getObjectiveValue()
+        fileName = str(run) + "/" + instanceName + "/ppa.txt"
+        print("Ppa algorithm " + instanceName + " done!")
+
+        Experiments.writeBestResults(fileName, best)
+
+    @staticmethod
+    def runPpaFfaSelectAlgorithm(instanceName, instance, run):
+        if Experiments.instanceIsTaken(instanceName, 'ffaSelect'):
+            return
+        print("Running ffaSelect algorithm " + instanceName)
+        restartConfig = RestartConfig()
+        restartConfig.setRestartValuesPpa(instanceName, run, '/ffaSelectCurrent.txt')
+        best = PpaAlgorithm.ppaAlgorithmFFASelection(instance, instanceName, run, restartConfig)
+        best = best.getObjectiveValue()
+        fileName = str(run) + "/" + instanceName + "/ffaSelectPpa.txt"
+        print("FfaSelect algorithm " + instanceName + " done!")
+
+        Experiments.writeBestResults(fileName, best)
+
+    @staticmethod
+    def runPpaFfaCompleteAlgorithm(instanceName, instance, run):
+        if Experiments.instanceIsTaken(instanceName, 'ffaComplete'):
+            return
+        print("Running ffaComplete algorithm " + instanceName)
+        restartConfig = RestartConfig()
+        restartConfig.setRestartValuesPpa(instanceName, run, '/ffaCompleteCurrent.txt')
+        best = PpaAlgorithm.ppaAlgorithmFFAComplete(instance, instanceName, run, restartConfig)
+        best = best.getObjectiveValue()
+        fileName = str(run) + "/" + instanceName + "/ffaCompletePpa.txt"
+        print("FfaComplete algorithm " + instanceName + " done!")
+
+        Experiments.writeBestResults(fileName, best)
 
     @staticmethod
     def writeBestResults(fileName, best):

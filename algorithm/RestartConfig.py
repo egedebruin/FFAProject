@@ -12,6 +12,7 @@ class RestartConfig:
         self.currentPopulation = None
         self.currentBest = 0
         self.frequencyTable = None
+        self.reset = False
 
     def setRestartValuesNormalHillClimber(self, instanceName, run):
         fileName = '/current_hc.txt'
@@ -37,4 +38,22 @@ class RestartConfig:
             self.functionEvaluations = int(line[0])
             self.currentPopulation = list(map(int, line[1].replace('[', '').replace(']', '').split(',')))
 
-    #TODO: Get restart values for PPA
+    def setRestartValuesPpa(self, instanceName, run, currentFileName):
+        if os.path.exists(Config.intermediateFolder + str(run) + "/" + instanceName + currentFileName):
+            self.reset = True
+            file = open(Config.intermediateFolder + str(run) + "/" + instanceName + currentFileName)
+            line = file.readline().split(',', 1)
+            secondLine = file.readline()
+            thirdLine = file.readline()
+
+            population = []
+            for individual in line[1].split(';'):
+                population.append(list(map(int, individual.replace('[', '').replace(']', '').split(','))))
+
+            self.functionEvaluations = int(line[0])
+            self.currentPopulation = population
+
+            if secondLine != 'null':
+                self.frequencyTable = defaultdict(lambda: 0, json.loads(secondLine))
+            if thirdLine != 'None':
+                self.currentBest = int(thirdLine)

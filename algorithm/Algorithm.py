@@ -128,9 +128,9 @@ class Algorithm:
         populationsWriteFile.write(str(value) + ", ")
 
     @staticmethod
-    def writeCurrentPopulationToFile(name, run, endFileName, evaluations, population, frequency=None):
+    def writeCurrentPopulationToFile(name, run, endFileName, evaluations, population, frequency=None, best=None):
         fileName = str(run) + "/" + name + endFileName
-        text = str(evaluations) + ", " + population.getIndividualsString() + "\n" + json.dumps(frequency)
+        text = str(evaluations) + ", " + population.getIndividualsString() + "\n" + json.dumps(frequency) + "\n" + str(best)
 
         os.makedirs(os.path.dirname(Config.intermediateFolder + fileName), exist_ok=True)
         populationsWriteFile = open(Config.intermediateFolder + fileName, 'w')

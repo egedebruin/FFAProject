@@ -4,6 +4,7 @@ import math
 from collections import defaultdict
 
 from Config import Config
+from genotype.SimpleEncoding import SimpleEncoding
 
 
 class Population:
@@ -77,6 +78,11 @@ class Population:
             return offspring
         return self.individuals
 
+    def fromIndividualSequenceList(self, sequenceList, instance):
+        self.individuals = []
+        for sequence in sequenceList:
+            self.individuals.append(SimpleEncoding(sequence, instance))
+
     def getMinimumAndMaximumObjectiveValue(self):
         minimum = math.inf
         maximum = 0
@@ -89,19 +95,16 @@ class Population:
         return minimum, maximum
 
     def getMinimumAndMaximumFFAValue(self):
-        # TODO: This.
-        minimum = math.inf
-        maximum = 0
-        for individual in self.individuals:
-            if individual.getObjectiveValue() > maximum:
-                maximum = individual.getObjectiveValue()
-            if individual.getObjectiveValue() < minimum:
-                minimum = individual.getObjectiveValue()
-
-        return minimum, maximum
+        return min(self.frequency.values()), max(self.frequency.values())
 
     def getIndividualsString(self):
         result = ''
         for individual in self.individuals:
             result += ';' + str(individual.sequence)
         return result[1:]
+
+    def getObjectiveValuesList(self):
+        result = []
+        for individual in self.individuals:
+            result.append(individual.getObjectiveValue())
+        return result
