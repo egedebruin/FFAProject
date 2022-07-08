@@ -53,7 +53,7 @@ class RestartConfig:
             self.functionEvaluations = int(line[0])
             self.currentPopulation = population
 
-            if secondLine != 'null':
+            if secondLine != 'null\n':
                 self.frequencyTable = defaultdict(lambda: 0, json.loads(secondLine))
             if thirdLine != 'None':
-                self.currentBest = int(thirdLine)
+                self.currentBest = list(map(int, thirdLine.replace('[', '').replace(']', '').split(',')))

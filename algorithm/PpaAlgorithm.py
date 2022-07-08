@@ -4,6 +4,7 @@ import random
 from Config import Config
 from algorithm.Algorithm import Algorithm
 from genotype.GenotypeFactory import GenotypeFactory
+from genotype.SimpleEncoding import SimpleEncoding
 
 
 class PpaAlgorithm:
@@ -20,7 +21,7 @@ class PpaAlgorithm:
 
         if restartConfig.reset:
             functionEvaluations = restartConfig.functionEvaluations
-            population = population.fromIndividualSequenceList(restartConfig.currentPopulation, instance)
+            population.fromIndividualSequenceList(restartConfig.currentPopulation, instance)
             best = population.selectBest([], 1)[0]
         else:
             Algorithm.writeCurrentPopulationToFile(name, run, currentFileName, functionEvaluations, population)
@@ -36,8 +37,8 @@ class PpaAlgorithm:
             offspring = PpaAlgorithm.ppaGenerateOffspring(population, minimumObjectiveValue, maximumObjectiveValue,
                                                           instance)
 
-            population.individuals = population.selectBestPreferOffspring(offspring, Config.populationSize)
-            best = population.selectBest(best, 1)[0]
+            population.individuals = population.selectBest(offspring, Config.populationSize)
+            best = population.selectBest([best], 1)[0]
 
             functionEvaluations += len(offspring)
 
@@ -59,11 +60,11 @@ class PpaAlgorithm:
 
         if restartConfig.reset:
             functionEvaluations = restartConfig.functionEvaluations
-            population = population.fromIndividualSequenceList(restartConfig.currentPopulation, instance)
-            best = restartConfig.currentBest
+            population.fromIndividualSequenceList(restartConfig.currentPopulation, instance)
+            best = SimpleEncoding(restartConfig.currentBest, instance)
             population.frequency = restartConfig.frequencyTable
         else:
-            Algorithm.writeCurrentPopulationToFile(name, run, currentFileName, functionEvaluations, population)
+            Algorithm.writeCurrentPopulationToFile(name, run, currentFileName, functionEvaluations, population, population.frequency, best.sequence)
             PpaAlgorithm.writeBestToFile(name, run, functionEvaluations, best.getObjectiveValue(), bestFileName)
             PpaAlgorithm.writeCurrentPopulationToAllFile(name, run, functionEvaluations, population, allPopFileName)
 
@@ -76,12 +77,12 @@ class PpaAlgorithm:
             offspring = PpaAlgorithm.ppaGenerateOffspring(population, minimumObjectiveValue, maximumObjectiveValue,
                                                           instance)
 
-            population.individuals = population.selectLeastFrequentPreferOffspring(offspring, Config.populationSize)
-            best = population.selectBest(best, 1)[0]
+            population.individuals = population.selectLeastFrequent(offspring, Config.populationSize)
+            best = population.selectBest([best], 1)[0]
 
             functionEvaluations += len(offspring)
 
-            Algorithm.writeCurrentPopulationToFile(name, run, currentFileName, functionEvaluations, population)
+            Algorithm.writeCurrentPopulationToFile(name, run, currentFileName, functionEvaluations, population, population.frequency, best.sequence)
             PpaAlgorithm.writeBestToFile(name, run, functionEvaluations, best.getObjectiveValue(), bestFileName)
             PpaAlgorithm.writeCurrentPopulationToAllFile(name, run, functionEvaluations, population, allPopFileName)
 
@@ -99,11 +100,11 @@ class PpaAlgorithm:
 
         if restartConfig.reset:
             functionEvaluations = restartConfig.functionEvaluations
-            population = population.fromIndividualSequenceList(restartConfig.currentPopulation, instance)
-            best = restartConfig.currentBest
+            population.fromIndividualSequenceList(restartConfig.currentPopulation, instance)
+            best = SimpleEncoding(restartConfig.currentBest, instance)
             population.frequency = restartConfig.frequencyTable
         else:
-            Algorithm.writeCurrentPopulationToFile(name, run, currentFileName, functionEvaluations, population)
+            Algorithm.writeCurrentPopulationToFile(name, run, currentFileName, functionEvaluations, population, population.frequency, best.sequence)
             PpaAlgorithm.writeBestToFile(name, run, functionEvaluations, best.getObjectiveValue(), bestFileName)
             PpaAlgorithm.writeCurrentPopulationToAllFile(name, run, functionEvaluations, population, allPopFileName)
 
@@ -113,34 +114,37 @@ class PpaAlgorithm:
             minimumObjectiveValue, maximumObjectiveValue = population.getMinimumAndMaximumFFAValue()
 
             offspring = PpaAlgorithm.ppaGenerateOffspring(population, minimumObjectiveValue, maximumObjectiveValue,
-                                                          instance)
+                                                          instance, True)
 
-            population.individuals = population.selectLeastFrequentPreferOffspring(offspring, Config.populationSize)
-            best = population.selectBest(best, 1)[0]
+            population.individuals = population.selectLeastFrequent(offspring, Config.populationSize)
+            best = population.selectBest([best], 1)[0]
 
             functionEvaluations += len(offspring)
 
-            Algorithm.writeCurrentPopulationToFile(name, run, currentFileName, functionEvaluations, population)
+            Algorithm.writeCurrentPopulationToFile(name, run, currentFileName, functionEvaluations, population, population.frequency, best.sequence)
             PpaAlgorithm.writeBestToFile(name, run, functionEvaluations, best.getObjectiveValue(), bestFileName)
             PpaAlgorithm.writeCurrentPopulationToAllFile(name, run, functionEvaluations, population, allPopFileName)
 
         return best
 
     @staticmethod
-    def ppaGenerateOffspring(population, minimumObjectiveValue, maximumObjectiveValue, instance):
+    def ppaGenerateOffspring(population, minimumObjectiveValue, maximumObjectiveValue, instance, ffa=False):
         offspring = []
         for individual in population.individuals:
-            fitnessValue = individual.getPpaFitnessValueStandard(minimumObjectiveValue, maximumObjectiveValue)
+            objectiveValue = individual.getObjectiveValue()
+            if ffa:
+                objectiveValue = population.frequency[objectiveValue]
+            fitnessValue = individual.getPpaFitnessValue(minimumObjectiveValue, maximumObjectiveValue, objectiveValue)
             amountOffspring, amountSwaps = PpaAlgorithm.ppaGetAmountOffspringAndSwaps(fitnessValue, instance)
 
-            for i in range(amountOffspring):
-                newIndividual = Algorithm.nRandomSwap(amountSwaps, individual)
+            for i in range(int(amountOffspring)):
+                newIndividual = PpaAlgorithm.nRandomSwap(amountSwaps, individual)
                 offspring.append(newIndividual)
         return offspring
 
     @staticmethod
     def nRandomSwap(amountSwaps, individual):
-        for i in range(amountSwaps):
+        for i in range(int(amountSwaps)):
             individual = individual.randomSingleSwap()
         return individual
 

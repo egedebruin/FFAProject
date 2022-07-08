@@ -1,6 +1,6 @@
 class Config:
     jssp = None
-    populationSize = 16
+    populationSize = 30
     offspringSize = 16
     maxOffspring = 5
     # TODO: Think of good populationSize and maxOffspring
@@ -9,5 +9,5 @@ class Config:
     timePerRun = 300
     maxFunctionEvaluations = 2 ** 30
     poolProcesses = 1
-    resultFolder = 'files/output/hc/results/'
-    intermediateFolder = 'files/output/hc/populations/'
+    resultFolder = 'files/output/ppa/results/'
+    intermediateFolder = 'files/output/ppa/populations/'

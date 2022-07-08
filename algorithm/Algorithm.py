@@ -114,12 +114,6 @@ class Algorithm:
         return best
 
     @staticmethod
-    def nRandomSwap(amountSwaps, individual):
-        for i in range(amountSwaps):
-            individual = individual.randomSingleSwap()
-        return individual
-
-    @staticmethod
     def writeBestToFile(name, run, value, endFileName):
         fileName = str(run) + "/" + name + endFileName
 

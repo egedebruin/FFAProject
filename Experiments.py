@@ -113,7 +113,7 @@ class Experiments:
         print("Running normal algorithm " + instanceName)
         restartConfig = RestartConfig()
         restartConfig.setRestartValuesFFAHillClimber(instanceName, run)
-        best = Algorithm.frequencyAssignmentHillClimberAlgorithm(instance, instanceName, run, restartConfig)
+        best = Algorithm.hillClimberAlgorithm(instance, instanceName, run, restartConfig)
         best = best.getObjectiveValue()
         fileName = str(run) + "/" + instanceName + "/hc.txt"
         print("Normal algorithm " + instanceName + " done!")
@@ -144,11 +144,11 @@ class Experiments:
             for name, instanceFormat in library.items():
                 instance = JSSPFactory.generateJSSPFromFormat(instanceFormat)
                 if not os.path.exists(Config.resultFolder + str(run) + "/" + name + "/ppa.txt"):
-                    pool.apply_async(Experiments.runHillClimberAlgorithm, args=(name, instance, run))
+                    pool.apply_async(Experiments.runPpaAlgorithm, args=(name, instance, run))
                 if not os.path.exists(Config.resultFolder + str(run) + "/" + name + "/ffaSelectPpa.txt"):
-                    pool.apply_async(Experiments.runFFAHillClimberAlgorithm, args=(name, instance, run))
+                    pool.apply_async(Experiments.runPpaFfaSelectAlgorithm, args=(name, instance, run))
                 if not os.path.exists(Config.resultFolder + str(run) + "/" + name + "/ffaCompletePpa.txt"):
-                    pool.apply_async(Experiments.runFFAHillClimberAlgorithm, args=(name, instance, run))
+                    pool.apply_async(Experiments.runPpaFfaCompleteAlgorithm, args=(name, instance, run))
             pool.close()
             pool.join()
 

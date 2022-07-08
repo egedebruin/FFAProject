@@ -110,11 +110,10 @@ class SimpleEncoding(Genotype, ABC):
             self.objectiveValue = self.toPhenotype().getObjectiveValue()
         return self.objectiveValue
 
-    def getPpaFitnessValueStandard(self, minimum, maximum):
-        return self._getPpaFitnessValue(minimum, maximum, self.getObjectiveValue())
+    def getPpaFitnessValue(self, minimum, maximum, value):
+        if minimum == maximum:
+            return 0.5
 
-    @staticmethod
-    def _getPpaFitnessValue(minimum, maximum, value):
         normalised = float((maximum - value) / (maximum - minimum))
 
         ppaFitness = 0.5 * (math.tanh(4 * normalised - 2) + 1)
