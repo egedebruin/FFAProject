@@ -150,10 +150,9 @@ class PpaAlgorithm:
 
     @staticmethod
     def ppaGetAmountOffspringAndSwaps(fitnessValue, instance):
-        maxAmountSwaps = instance.amountJobs * instance.amountMachines
-        # TODO: Think of good maxAmountSwaps
-        amountOffspring = Config.maxOffspring * fitnessValue * random.random()
-        amountSwaps = maxAmountSwaps * 2 * (1 - fitnessValue) * (random.random() - 0.5)
+        maxAmountSwaps = 0.5 * (instance.amountJobs * instance.amountMachines)
+        amountOffspring = max(1, Config.maxOffspring * fitnessValue * random.random())
+        amountSwaps = max(1, maxAmountSwaps * random.random() * (1 - fitnessValue))
 
         return amountOffspring, amountSwaps
 
