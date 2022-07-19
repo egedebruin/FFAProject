@@ -28,7 +28,7 @@ class RestartConfig:
         allFileName = '/fhc.txt'
         if os.path.exists(Config.intermediateFolder + str(run) + "/" + instanceName + allFileName):
             file = open(Config.intermediateFolder + str(run) + "/" + instanceName + allFileName)
-            self.currentBest = file.read().split(',')[-2]
+            self.currentBest = int(file.read().split(',')[-2])
         if os.path.exists(Config.intermediateFolder + str(run) + "/" + instanceName + currentFileName):
             file = open(Config.intermediateFolder + str(run) + "/" + instanceName + currentFileName)
             line = file.readline().split(',', 1)

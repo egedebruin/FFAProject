@@ -112,7 +112,7 @@ class Experiments:
             return
         print("Running normal algorithm " + instanceName)
         restartConfig = RestartConfig()
-        restartConfig.setRestartValuesFFAHillClimber(instanceName, run)
+        restartConfig.setRestartValuesNormalHillClimber(instanceName, run)
         best = Algorithm.hillClimberAlgorithm(instance, instanceName, run, restartConfig)
         best = best.getObjectiveValue()
         fileName = str(run) + "/" + instanceName + "/hc.txt"

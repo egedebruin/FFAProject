@@ -70,11 +70,14 @@ class Algorithm:
             population.individuals = population.selectBestPreferOffspring([newIndividual])
 
             functionEvaluations += 1
-            if functionEvaluations % 1000 == 0:
-                Algorithm.writeBestToFile(name, run, best, bestFileName)
+            if functionEvaluations in Config.intermediateSavingList:
+                Algorithm.writeBestToFile(name, run, best.getObjectiveValue(), bestFileName)
                 Algorithm.writeCurrentPopulationToFile(name, run, currentPopulationFileName, functionEvaluations,
-                                                       population, population.frequency)
+                                                       population)
 
+        Algorithm.writeBestToFile(name, run, best.getObjectiveValue(), bestFileName)
+        Algorithm.writeCurrentPopulationToFile(name, run, currentPopulationFileName, functionEvaluations,
+                                               population)
         return best
 
     @staticmethod
@@ -107,10 +110,13 @@ class Algorithm:
             population.individuals = population.selectLeastFrequentPreferOffspring([newIndividual])
 
             functionEvaluations += 1
-            if functionEvaluations % 1000 == 0:
+            if functionEvaluations in Config.intermediateSavingList:
                 Algorithm.writeBestToFile(name, run, best, bestFileName)
                 Algorithm.writeCurrentPopulationToFile(name, run, currentPopulationFileName, functionEvaluations, population, population.frequency)
 
+        Algorithm.writeBestToFile(name, run, best, bestFileName)
+        Algorithm.writeCurrentPopulationToFile(name, run, currentPopulationFileName, functionEvaluations, population,
+                                               population.frequency)
         return best
 
     @staticmethod
