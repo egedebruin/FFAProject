@@ -42,10 +42,14 @@ class PpaAlgorithm:
 
             functionEvaluations += len(offspring)
 
-            Algorithm.writeCurrentPopulationToFile(name, run, currentFileName, functionEvaluations, population)
-            PpaAlgorithm.writeBestToFile(name, run, functionEvaluations, best.getObjectiveValue(), bestFileName)
-            PpaAlgorithm.writeCurrentPopulationToAllFile(name, run, functionEvaluations, population, allPopFileName)
+            if functionEvaluations in Config.intermediateSavingList:
+                Algorithm.writeCurrentPopulationToFile(name, run, currentFileName, functionEvaluations, population)
+                PpaAlgorithm.writeBestToFile(name, run, functionEvaluations, best.getObjectiveValue(), bestFileName)
+                PpaAlgorithm.writeCurrentPopulationToAllFile(name, run, functionEvaluations, population, allPopFileName)
 
+        Algorithm.writeCurrentPopulationToFile(name, run, currentFileName, functionEvaluations, population)
+        PpaAlgorithm.writeBestToFile(name, run, functionEvaluations, best.getObjectiveValue(), bestFileName)
+        PpaAlgorithm.writeCurrentPopulationToAllFile(name, run, functionEvaluations, population, allPopFileName)
         return best
 
     @staticmethod
@@ -82,10 +86,15 @@ class PpaAlgorithm:
 
             functionEvaluations += len(offspring)
 
-            Algorithm.writeCurrentPopulationToFile(name, run, currentFileName, functionEvaluations, population, population.frequency, best.sequence)
-            PpaAlgorithm.writeBestToFile(name, run, functionEvaluations, best.getObjectiveValue(), bestFileName)
-            PpaAlgorithm.writeCurrentPopulationToAllFile(name, run, functionEvaluations, population, allPopFileName)
+            if functionEvaluations in Config.intermediateSavingList:
+                Algorithm.writeCurrentPopulationToFile(name, run, currentFileName, functionEvaluations, population, population.frequency, best.sequence)
+                PpaAlgorithm.writeBestToFile(name, run, functionEvaluations, best.getObjectiveValue(), bestFileName)
+                PpaAlgorithm.writeCurrentPopulationToAllFile(name, run, functionEvaluations, population, allPopFileName)
 
+        Algorithm.writeCurrentPopulationToFile(name, run, currentFileName, functionEvaluations, population,
+                                               population.frequency, best.sequence)
+        PpaAlgorithm.writeBestToFile(name, run, functionEvaluations, best.getObjectiveValue(), bestFileName)
+        PpaAlgorithm.writeCurrentPopulationToAllFile(name, run, functionEvaluations, population, allPopFileName)
         return best
 
     @staticmethod
@@ -125,6 +134,10 @@ class PpaAlgorithm:
             PpaAlgorithm.writeBestToFile(name, run, functionEvaluations, best.getObjectiveValue(), bestFileName)
             PpaAlgorithm.writeCurrentPopulationToAllFile(name, run, functionEvaluations, population, allPopFileName)
 
+        Algorithm.writeCurrentPopulationToFile(name, run, currentFileName, functionEvaluations, population,
+                                               population.frequency, best.sequence)
+        PpaAlgorithm.writeBestToFile(name, run, functionEvaluations, best.getObjectiveValue(), bestFileName)
+        PpaAlgorithm.writeCurrentPopulationToAllFile(name, run, functionEvaluations, population, allPopFileName)
         return best
 
     @staticmethod

@@ -10,3 +10,4 @@ class Config:
     poolProcesses = 16
     resultFolder = 'files/output/ppa/results/'
     intermediateFolder = 'files/output/ppa/populations/'
+    intermediateSavingList = []
