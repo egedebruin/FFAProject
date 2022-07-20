@@ -28,9 +28,12 @@ class PpaAlgorithm:
             PpaAlgorithm.writeBestToFile(name, run, functionEvaluations, best.getObjectiveValue(), bestFileName)
             PpaAlgorithm.writeCurrentPopulationToAllFile(name, run, functionEvaluations, population, allPopFileName)
 
+        previousEvaluations = functionEvaluations
         while functionEvaluations < Config.maxFunctionEvaluations:
-            if functionEvaluations % 1000000 == 0:
-                print("PPA: On function evaluation " + str(functionEvaluations) + " for instance " + name + " in run " + str(run))
+            if functionEvaluations % 1000000 == 0 or (previousEvaluations % 1000000 > functionEvaluations % 1000000):
+                print("FFAComplete: On function evaluation " + str(
+                    functionEvaluations) + " for instance " + name + " in run " + str(run))
+            previousEvaluations = functionEvaluations
 
             minimumObjectiveValue, maximumObjectiveValue = population.getMinimumAndMaximumObjectiveValue()
 
@@ -42,7 +45,10 @@ class PpaAlgorithm:
 
             functionEvaluations += len(offspring)
 
-            if functionEvaluations in Config.intermediateSavingList:
+            if functionEvaluations < 1000 or \
+                    PpaAlgorithm.testMethod(previousEvaluations, functionEvaluations, 1000, 1000000) or \
+                    PpaAlgorithm.testMethod(previousEvaluations, functionEvaluations, 1000000, 100000000) or \
+                    PpaAlgorithm.testMethod(previousEvaluations, functionEvaluations, 100000000, 2000000000):
                 Algorithm.writeCurrentPopulationToFile(name, run, currentFileName, functionEvaluations, population)
                 PpaAlgorithm.writeBestToFile(name, run, functionEvaluations, best.getObjectiveValue(), bestFileName)
                 PpaAlgorithm.writeCurrentPopulationToAllFile(name, run, functionEvaluations, population, allPopFileName)
@@ -72,9 +78,12 @@ class PpaAlgorithm:
             PpaAlgorithm.writeBestToFile(name, run, functionEvaluations, best.getObjectiveValue(), bestFileName)
             PpaAlgorithm.writeCurrentPopulationToAllFile(name, run, functionEvaluations, population, allPopFileName)
 
+        previousEvaluations = functionEvaluations
         while functionEvaluations < Config.maxFunctionEvaluations:
-            if functionEvaluations % 1000000 == 0:
-                print("FFASelection: On function evaluation " + str(functionEvaluations) + " for instance " + name + " in run " + str(run))
+            if functionEvaluations % 1000000 == 0 or (previousEvaluations % 1000000 > functionEvaluations % 1000000):
+                print("FFAComplete: On function evaluation " + str(
+                    functionEvaluations) + " for instance " + name + " in run " + str(run))
+            previousEvaluations = functionEvaluations
 
             minimumObjectiveValue, maximumObjectiveValue = population.getMinimumAndMaximumObjectiveValue()
 
@@ -86,7 +95,10 @@ class PpaAlgorithm:
 
             functionEvaluations += len(offspring)
 
-            if functionEvaluations in Config.intermediateSavingList:
+            if functionEvaluations < 1000 or \
+                    PpaAlgorithm.testMethod(previousEvaluations, functionEvaluations, 1000, 1000000) or \
+                    PpaAlgorithm.testMethod(previousEvaluations, functionEvaluations, 1000000, 100000000) or \
+                    PpaAlgorithm.testMethod(previousEvaluations, functionEvaluations, 100000000, 2000000000):
                 Algorithm.writeCurrentPopulationToFile(name, run, currentFileName, functionEvaluations, population, population.frequency, best.sequence)
                 PpaAlgorithm.writeBestToFile(name, run, functionEvaluations, best.getObjectiveValue(), bestFileName)
                 PpaAlgorithm.writeCurrentPopulationToAllFile(name, run, functionEvaluations, population, allPopFileName)
@@ -117,9 +129,12 @@ class PpaAlgorithm:
             PpaAlgorithm.writeBestToFile(name, run, functionEvaluations, best.getObjectiveValue(), bestFileName)
             PpaAlgorithm.writeCurrentPopulationToAllFile(name, run, functionEvaluations, population, allPopFileName)
 
+        previousEvaluations = functionEvaluations
         while functionEvaluations < Config.maxFunctionEvaluations:
-            if functionEvaluations % 1000000 == 0:
+            if functionEvaluations % 1000000 == 0 or (previousEvaluations % 1000000 > functionEvaluations % 1000000):
                 print("FFAComplete: On function evaluation " + str(functionEvaluations) + " for instance " + name + " in run " + str(run))
+            previousEvaluations = functionEvaluations
+
             minimumObjectiveValue, maximumObjectiveValue = population.getMinimumAndMaximumFFAValue()
 
             offspring = PpaAlgorithm.ppaGenerateOffspring(population, minimumObjectiveValue, maximumObjectiveValue,
@@ -130,15 +145,25 @@ class PpaAlgorithm:
 
             functionEvaluations += len(offspring)
 
-            Algorithm.writeCurrentPopulationToFile(name, run, currentFileName, functionEvaluations, population, population.frequency, best.sequence)
-            PpaAlgorithm.writeBestToFile(name, run, functionEvaluations, best.getObjectiveValue(), bestFileName)
-            PpaAlgorithm.writeCurrentPopulationToAllFile(name, run, functionEvaluations, population, allPopFileName)
+            if functionEvaluations < 1000 or \
+                    PpaAlgorithm.testMethod(previousEvaluations, functionEvaluations, 1000, 1000000) or \
+                    PpaAlgorithm.testMethod(previousEvaluations, functionEvaluations, 1000000, 100000000) or \
+                    PpaAlgorithm.testMethod(previousEvaluations, functionEvaluations, 100000000, 2000000000):
+                Algorithm.writeCurrentPopulationToFile(name, run, currentFileName, functionEvaluations, population, population.frequency, best.sequence)
+                PpaAlgorithm.writeBestToFile(name, run, functionEvaluations, best.getObjectiveValue(), bestFileName)
+                PpaAlgorithm.writeCurrentPopulationToAllFile(name, run, functionEvaluations, population, allPopFileName)
 
         Algorithm.writeCurrentPopulationToFile(name, run, currentFileName, functionEvaluations, population,
                                                population.frequency, best.sequence)
         PpaAlgorithm.writeBestToFile(name, run, functionEvaluations, best.getObjectiveValue(), bestFileName)
         PpaAlgorithm.writeCurrentPopulationToAllFile(name, run, functionEvaluations, population, allPopFileName)
         return best
+
+    @staticmethod
+    def testMethod(previousEvaluations, functionEvaluations, modulo, threshold):
+        if (functionEvaluations < threshold) & (previousEvaluations % modulo >= functionEvaluations % modulo):
+            return True
+        return False
 
     @staticmethod
     def ppaGenerateOffspring(population, minimumObjectiveValue, maximumObjectiveValue, instance, ffa=False):

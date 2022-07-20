@@ -147,8 +147,8 @@ class Experiments:
                     pool.apply_async(Experiments.runPpaAlgorithm, args=(name, instance, run))
                 if not os.path.exists(Config.resultFolder + str(run) + "/" + name + "/ffaSelectPpa.txt"):
                     pool.apply_async(Experiments.runPpaFfaSelectAlgorithm, args=(name, instance, run))
-                if not os.path.exists(Config.resultFolder + str(run) + "/" + name + "/ffaCompletePpa.txt"):
-                    pool.apply_async(Experiments.runPpaFfaCompleteAlgorithm, args=(name, instance, run))
+                # if not os.path.exists(Config.resultFolder + str(run) + "/" + name + "/ffaCompletePpa.txt"):
+                #     pool.apply_async(Experiments.runPpaFfaCompleteAlgorithm, args=(name, instance, run))
             pool.close()
             pool.join()
 
