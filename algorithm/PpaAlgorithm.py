@@ -31,7 +31,7 @@ class PpaAlgorithm:
         previousEvaluations = functionEvaluations
         while functionEvaluations < Config.maxFunctionEvaluations:
             if functionEvaluations % 1000000 == 0 or (previousEvaluations % 1000000 > functionEvaluations % 1000000):
-                print("FFAComplete: On function evaluation " + str(
+                print("PPA: On function evaluation " + str(
                     functionEvaluations) + " for instance " + name + " in run " + str(run))
             previousEvaluations = functionEvaluations
 
@@ -81,7 +81,7 @@ class PpaAlgorithm:
         previousEvaluations = functionEvaluations
         while functionEvaluations < Config.maxFunctionEvaluations:
             if functionEvaluations % 1000000 == 0 or (previousEvaluations % 1000000 > functionEvaluations % 1000000):
-                print("FFAComplete: On function evaluation " + str(
+                print("FFASelect: On function evaluation " + str(
                     functionEvaluations) + " for instance " + name + " in run " + str(run))
             previousEvaluations = functionEvaluations
 
