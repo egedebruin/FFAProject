@@ -4,7 +4,6 @@ from Config import Config
 from genotype.GenotypeFactory import GenotypeFactory
 import time
 import json
-import random
 
 from genotype.SimpleEncoding import SimpleEncoding
 
@@ -70,7 +69,9 @@ class Algorithm:
             population.individuals = population.selectBestPreferOffspring([newIndividual])
 
             functionEvaluations += 1
-            if functionEvaluations in Config.intermediateSavingList:
+            if functionEvaluations < 1000 or \
+                    (functionEvaluations < 1000000 and functionEvaluations % 1000 == 0) or \
+                    (functionEvaluations < 10000000000 and functionEvaluations % 1000000 == 0):
                 Algorithm.writeBestToFile(name, run, best.getObjectiveValue(), bestFileName)
                 Algorithm.writeCurrentPopulationToFile(name, run, currentPopulationFileName, functionEvaluations,
                                                        population)
@@ -110,7 +111,9 @@ class Algorithm:
             population.individuals = population.selectLeastFrequentPreferOffspring([newIndividual])
 
             functionEvaluations += 1
-            if functionEvaluations in Config.intermediateSavingList:
+            if functionEvaluations < 1000 or \
+                    (functionEvaluations < 1000000 and functionEvaluations % 1000 == 0) or \
+                    (functionEvaluations < 10000000000 and functionEvaluations % 1000000 == 0):
                 Algorithm.writeBestToFile(name, run, best, bestFileName)
                 Algorithm.writeCurrentPopulationToFile(name, run, currentPopulationFileName, functionEvaluations, population, population.frequency)
 
