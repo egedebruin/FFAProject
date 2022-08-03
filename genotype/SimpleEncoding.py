@@ -81,11 +81,17 @@ class SimpleEncoding(Genotype, ABC):
         newSimpleEncoding = SimpleEncoding(newSequence, self.jsspInstance)
         return newSimpleEncoding
 
-    def randomSingleSwap(self):
+    def singleSwapInPlace(self, firstIndex, secondIndex):
+        self.sequence[firstIndex], self.sequence[secondIndex] = self.sequence[secondIndex], self.sequence[firstIndex]
+
+    def randomSingleSwap(self, inPlace=False):
         firstIndex = random.randint(0, len(self.sequence) - 1)
         secondIndex = firstIndex
         while secondIndex == firstIndex:
             secondIndex = random.randint(0, len(self.sequence) - 1)
+
+        if inPlace:
+            return self.singleSwapInPlace(firstIndex, secondIndex)
         return self.singleSwap(firstIndex, secondIndex)
 
     def makeBabyWith(self, otherSimpleEncoding):

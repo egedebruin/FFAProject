@@ -176,15 +176,16 @@ class PpaAlgorithm:
             amountOffspring, amountSwaps = PpaAlgorithm.ppaGetAmountOffspringAndSwaps(fitnessValue, instance)
 
             for i in range(int(amountOffspring)):
-                newIndividual = PpaAlgorithm.nRandomSwap(amountSwaps, individual)
+                newIndividual = PpaAlgorithm.nRandomSwap(amountSwaps, individual, instance)
                 offspring.append(newIndividual)
         return offspring
 
     @staticmethod
-    def nRandomSwap(amountSwaps, individual):
+    def nRandomSwap(amountSwaps, individual, instance):
+        newIndividual = SimpleEncoding(individual.sequence, instance)
         for i in range(int(amountSwaps)):
-            individual = individual.randomSingleSwap()
-        return individual
+            newIndividual.randomSingleSwap(True)
+        return newIndividual
 
     @staticmethod
     def ppaGetAmountOffspringAndSwaps(fitnessValue, instance):
