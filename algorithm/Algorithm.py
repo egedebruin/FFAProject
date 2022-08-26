@@ -48,6 +48,7 @@ class Algorithm:
     def hillClimberAlgorithm(instance, name, run, restartConfig):
         bestFileName = '/hc.txt'
         currentPopulationFileName = '/current_hc.txt'
+        functionEvaluations = restartConfig.functionEvaluations
 
         population = GenotypeFactory.generateRandomSimpleEncodingPopulation(1, instance)
         if restartConfig.currentPopulation is not None:
@@ -56,9 +57,8 @@ class Algorithm:
         best = population.individuals[0]
 
         if restartConfig.currentPopulation is None:
-            Algorithm.writeBestToFile(name, run, best.getObjectiveValue(), bestFileName)
+            Algorithm.writeBestToFile(name, run, functionEvaluations,  best.getObjectiveValue(), bestFileName)
 
-        functionEvaluations = restartConfig.functionEvaluations
         while functionEvaluations < Config.maxFunctionEvaluations:
             if functionEvaluations % 1000000 == 0:
                 print("Normal: On function evaluation " + str(functionEvaluations) + " for instance " + name + " in run " + str(run))
@@ -72,11 +72,11 @@ class Algorithm:
             if functionEvaluations < 1000 or \
                     (functionEvaluations < 1000000 and functionEvaluations % 1000 == 0) or \
                     (functionEvaluations < 10000000000 and functionEvaluations % 1000000 == 0):
-                Algorithm.writeBestToFile(name, run, best.getObjectiveValue(), bestFileName)
+                Algorithm.writeBestToFile(name, run, functionEvaluations,  best.getObjectiveValue(), bestFileName)
                 Algorithm.writeCurrentPopulationToFile(name, run, currentPopulationFileName, functionEvaluations,
                                                        population)
 
-        Algorithm.writeBestToFile(name, run, best.getObjectiveValue(), bestFileName)
+        Algorithm.writeBestToFile(name, run, functionEvaluations,  best.getObjectiveValue(), bestFileName)
         Algorithm.writeCurrentPopulationToFile(name, run, currentPopulationFileName, functionEvaluations,
                                                population)
         return best
@@ -85,6 +85,7 @@ class Algorithm:
     def frequencyAssignmentHillClimberAlgorithm(instance, name, run, restartConfig):
         bestFileName = '/fhc.txt'
         currentPopulationFileName = '/current_fhc.txt'
+        functionEvaluations = restartConfig.functionEvaluations
 
         population = GenotypeFactory.generateRandomSimpleEncodingPopulation(1, instance)
         if restartConfig.currentPopulation is not None:
@@ -93,20 +94,18 @@ class Algorithm:
         if restartConfig.frequencyTable is not None:
             population.frequency = restartConfig.frequencyTable
 
-        best = restartConfig.currentBest
+        best = SimpleEncoding(restartConfig.currentBest, instance)
         if restartConfig.currentBest == 0:
-            best = population.individuals[0].getObjectiveValue()
-            Algorithm.writeBestToFile(name, run, best, bestFileName)
-
-        functionEvaluations = restartConfig.functionEvaluations
+            best = population.individuals[0]
+            Algorithm.writeBestToFile(name, run, functionEvaluations, best.getObjectiveValue(), bestFileName)
 
         while functionEvaluations < Config.maxFunctionEvaluations:
             if functionEvaluations % 1000000 == 0:
                 print("FFA: On function evaluation " + str(functionEvaluations) + " for instance " + name + " in run " + str(run))
             newIndividual = population.individuals[0].randomSingleSwap()
 
-            if newIndividual.getObjectiveValue() < best:
-                best = newIndividual.getObjectiveValue()
+            if newIndividual.getObjectiveValue() < best.getObjectiveValue():
+                best = newIndividual
 
             population.individuals = population.selectLeastFrequentPreferOffspring([newIndividual])
 
@@ -114,21 +113,21 @@ class Algorithm:
             if functionEvaluations < 1000 or \
                     (functionEvaluations < 1000000 and functionEvaluations % 1000 == 0) or \
                     (functionEvaluations < 10000000000 and functionEvaluations % 1000000 == 0):
-                Algorithm.writeBestToFile(name, run, best, bestFileName)
-                Algorithm.writeCurrentPopulationToFile(name, run, currentPopulationFileName, functionEvaluations, population, population.frequency)
+                Algorithm.writeBestToFile(name, run, functionEvaluations,  best.getObjectiveValue(), bestFileName)
+                Algorithm.writeCurrentPopulationToFile(name, run, currentPopulationFileName, functionEvaluations, population, population.frequency, best.sequence)
 
-        Algorithm.writeBestToFile(name, run, best, bestFileName)
+        Algorithm.writeBestToFile(name, run, functionEvaluations, best.getObjectiveValue(), bestFileName)
         Algorithm.writeCurrentPopulationToFile(name, run, currentPopulationFileName, functionEvaluations, population,
-                                               population.frequency)
+                                               population.frequency, best.sequence)
         return best
 
     @staticmethod
-    def writeBestToFile(name, run, value, endFileName):
+    def writeBestToFile(name, run, functionEvaluations, value, endFileName):
         fileName = str(run) + "/" + name + endFileName
 
         os.makedirs(os.path.dirname(Config.intermediateFolder + fileName), exist_ok=True)
         populationsWriteFile = open(Config.intermediateFolder + fileName, 'a')
-        populationsWriteFile.write(str(value) + ", ")
+        populationsWriteFile.write(str(functionEvaluations) + ":" + str(value) + ", ")
 
     @staticmethod
     def writeCurrentPopulationToFile(name, run, endFileName, evaluations, population, frequency=None, best=None):

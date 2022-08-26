@@ -8,5 +8,5 @@ class Config:
     timePerRun = 300
     maxFunctionEvaluations = 2 ** 30
     poolProcesses = 16
-    resultFolder = 'files/output/ppa/results/'
-    intermediateFolder = 'files/output/ppa/populations/'
+    resultFolder = 'files/output/hc2/results/'
+    intermediateFolder = 'files/output/hc2/populations/'

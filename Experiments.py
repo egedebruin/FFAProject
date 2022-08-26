@@ -90,46 +90,47 @@ class Experiments:
             print("-----")
 
     @staticmethod
-    def runHillClimberComparisonExperiment(library):
-        for i in range(Config.runs):
-            pool = Pool(processes=Config.poolProcesses)
-            run = i + 1
-            print("Starting experiment run: " + str(run))
-            print("-----")
+    def runHillClimberComparisonExperiment(library, sortedInstances):
+        pool = Pool(processes=Config.poolProcesses)
+        for name, size in sortedInstances.items():
+            instanceFormat = library[name]
 
-            for name, instanceFormat in library.items():
+            for i in range(Config.runs):
+                run = i + 1
                 instance = JSSPFactory.generateJSSPFromFormat(instanceFormat)
-                if not os.path.exists(Config.resultFolder+ str(run) + "/" + name + "/hc.txt"):
+                if not os.path.exists(Config.resultFolder + str(run) + "/" + name + "/hc.txt"):
                     pool.apply_async(Experiments.runHillClimberAlgorithm, args=(name, instance, run))
                 if not os.path.exists(Config.resultFolder + str(run) + "/" + name + "/fhc.txt"):
                     pool.apply_async(Experiments.runFFAHillClimberAlgorithm, args=(name, instance, run))
-            pool.close()
-            pool.join()
+
+        pool.close()
+        pool.join()
 
     @staticmethod
     def runHillClimberAlgorithm(instanceName, instance, run):
-        if Experiments.instanceIsTaken(instanceName, 'hc'):
+        if Experiments.instanceIsTaken(instanceName, 'hc', run):
             return
-        print("Running normal algorithm " + instanceName)
+        print("Running normal algorithm " + instanceName + " run " + str(run))
         restartConfig = RestartConfig()
         restartConfig.setRestartValuesNormalHillClimber(instanceName, run)
         best = Algorithm.hillClimberAlgorithm(instance, instanceName, run, restartConfig)
         best = best.getObjectiveValue()
         fileName = str(run) + "/" + instanceName + "/hc.txt"
-        print("Normal algorithm " + instanceName + " done!")
+        print("Normal algorithm " + instanceName + " run " + str(run) + " done!")
 
         Experiments.writeBestResults(fileName, best)
 
     @staticmethod
     def runFFAHillClimberAlgorithm(instanceName, instance, run):
-        if Experiments.instanceIsTaken(instanceName, 'ffa'):
+        if Experiments.instanceIsTaken(instanceName, 'ffa', run):
             return
-        print("Running FFA algorithm " + instanceName)
+        print("Running FFA algorithm " + instanceName + " run " + str(run))
         restartConfig = RestartConfig()
         restartConfig.setRestartValuesFFAHillClimber(instanceName, run)
         best = Algorithm.frequencyAssignmentHillClimberAlgorithm(instance, instanceName, run, restartConfig)
+        best = best.getObjectiveValue()
         fileName = str(run) + "/" + instanceName + "/fhc.txt"
-        print("FFA algorithm " + instanceName + " done!")
+        print("FFA algorithm " + instanceName + " run " + str(run))
 
         Experiments.writeBestResults(fileName, best)
 
@@ -231,15 +232,15 @@ class Experiments:
         dataFrame.to_csv('files/output/results.csv', index=False)
 
     @staticmethod
-    def instanceIsTaken(instanceName, algorithmType):
+    def instanceIsTaken(instanceName, algorithmType, run=1):
         with FileLock('files/taken.txt.lock'):
             file = open('files/taken.txt', 'r')
-            if instanceName + algorithmType in file.read():
+            if instanceName + algorithmType + str(run) in file.read():
                 file.close()
                 return True
             file.close()
 
             file = open('files/taken.txt', 'a')
-            file.write(', ' + instanceName + algorithmType)
+            file.write(', ' + instanceName + algorithmType + str(run))
             file.close()
             return False
