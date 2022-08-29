@@ -15,7 +15,7 @@ from Util import Util
 #
 #     Experiments.runPpaComparisonExperiment(library)
 
-results = pd.read_csv('allResults.csv')
+results = pd.read_csv('files/output/ppa/allResults.csv')
 hcResults = pd.read_csv('files/output/hc/allResults.csv')
 
 ppaBetter = 0
@@ -111,12 +111,12 @@ for index, value in results.iterrows():
 # print(amountHcBest)
 # print(amountTies)
 
-# plt.scatter(range(1, 233), results['ppa'], s=20, marker='o', label='PPA')
-# plt.scatter(range(1, 233), results['ffaSelect'], s=20, marker='^', label='PPA FFA Select')
-# plt.scatter(range(1, 233), results['ffaComplete'], s=20, marker='s', label='PPA FFA Complete')
-# plt.scatter(range(1, 233), hcResults['hc'], s=20, marker='P', label='HC')
-# plt.scatter(range(1, 233), hcResults['ffa'], s=20, marker='p', label='HC FFA')
-# plt.scatter(range(1, 233), results['best known solution'], s=20, marker='*', label='Best Known Solution')
+# plt.scatter(range(1, 243), results['ppa'], s=20, marker='o', label='PPA')
+# plt.scatter(range(1, 243), results['ffaSelect'], s=20, marker='^', label='PPA FFA Select')
+# plt.scatter(range(1, 243), results['ffaComplete'], s=20, marker='s', label='PPA FFA Complete')
+# plt.scatter(range(1, 243), hcResults['hc'], s=20, marker='P', label='HC')
+# plt.scatter(range(1, 243), hcResults['ffa'], s=20, marker='p', label='HC FFA')
+# plt.scatter(range(1, 243), results['best known solution'], s=20, marker='*', label='Best Known Solution')
 # plt.xlabel('Instance')
 # plt.ylabel('Objective Value')
 # plt.legend()
@@ -131,7 +131,7 @@ Util.plotBoth(library, ['swv05', 'dmu76'])
 #
 # library = Util.readFullLibrary('files/jssp-instances/full_full_library.txt')
 #
-# subFolders = ['dmu39', 'ta65', 'dmu53', 'dmu75', 'dmu45', 'la38']
+# subFolders = ['ta77', 'ta76', 'dmu53', 'dmu75', 'dmu45', 'la38']
 # resultFolder = 'files/output/ppa/populations/1/'
 # yPPAs = []
 # yFFAs = []

@@ -1,5 +1,6 @@
 import os
 import random
+from copy import copy
 
 from Config import Config
 from algorithm.Algorithm import Algorithm
@@ -193,7 +194,7 @@ class PpaAlgorithm:
 
     @staticmethod
     def nRandomSwap(amountSwaps, individual, instance):
-        newIndividual = SimpleEncoding(individual.sequence, instance)
+        newIndividual = SimpleEncoding(copy(individual.sequence), instance)
         for i in range(int(amountSwaps)):
             newIndividual.randomSingleSwap(True)
         return newIndividual
