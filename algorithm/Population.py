@@ -95,7 +95,15 @@ class Population:
         return minimum, maximum
 
     def getMinimumAndMaximumFFAValue(self):
-        return min(self.frequency.values()), max(self.frequency.values())
+        minimum = math.inf
+        maximum = 0
+        for individual in self.individuals:
+            if self.frequency[individual.getObjectiveValue()] > maximum:
+                maximum = self.frequency[individual.getObjectiveValue()]
+            if self.frequency[individual.getObjectiveValue()] < minimum:
+                minimum = self.frequency[individual.getObjectiveValue()]
+
+        return minimum, maximum
 
     def getIndividualsString(self):
         result = ''
