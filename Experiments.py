@@ -135,14 +135,15 @@ class Experiments:
         Experiments.writeBestResults(fileName, best)
 
     @staticmethod
-    def runPpaComparisonExperiment(library):
+    def runPpaComparisonExperiment(library, sortedInstances):
         for i in range(Config.runs):
             pool = Pool(processes=Config.poolProcesses)
             run = i + 1
             print("Starting experiment run: " + str(run))
             print("-----")
 
-            for name, instanceFormat in library.items():
+            for name, size in sortedInstances.items():
+                instanceFormat = library[name]
                 instance = JSSPFactory.generateJSSPFromFormat(instanceFormat)
                 if not os.path.exists(Config.resultFolder + str(run) + "/" + name + "/ppa.txt"):
                     pool.apply_async(Experiments.runPpaAlgorithm, args=(name, instance, run))

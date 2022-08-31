@@ -48,14 +48,10 @@ class PpaAlgorithm:
 
             if functionEvaluations < 1000 or \
                     PpaAlgorithm.testMethod(previousEvaluations, functionEvaluations, 1000, 1000000) or \
-                    PpaAlgorithm.testMethod(previousEvaluations, functionEvaluations, 1000000, 100000000) or \
-                    PpaAlgorithm.testMethod(previousEvaluations, functionEvaluations, 100000000, 2000000000):
+                    PpaAlgorithm.testMethod(previousEvaluations, functionEvaluations, 1000000, 2000000000):
                 Algorithm.writeCurrentPopulationToFile(name, run, currentFileName, functionEvaluations, population)
                 PpaAlgorithm.writeBestToFile(name, run, functionEvaluations, best.getObjectiveValue(), bestFileName)
                 PpaAlgorithm.writeCurrentPopulationToAllFile(name, run, functionEvaluations, population, allPopFileName)
-
-            if PpaAlgorithm.testMethod(previousEvaluations, functionEvaluations, 1000000, 2000000000):
-                Algorithm.writeCurrentPopulationToFile(name, run, currentFileName, functionEvaluations, population)
 
         Algorithm.writeCurrentPopulationToFile(name, run, currentFileName, functionEvaluations, population)
         PpaAlgorithm.writeBestToFile(name, run, functionEvaluations, best.getObjectiveValue(), bestFileName)
@@ -101,15 +97,10 @@ class PpaAlgorithm:
 
             if functionEvaluations < 1000 or \
                     PpaAlgorithm.testMethod(previousEvaluations, functionEvaluations, 1000, 1000000) or \
-                    PpaAlgorithm.testMethod(previousEvaluations, functionEvaluations, 1000000, 100000000) or \
-                    PpaAlgorithm.testMethod(previousEvaluations, functionEvaluations, 100000000, 2000000000):
+                    PpaAlgorithm.testMethod(previousEvaluations, functionEvaluations, 1000000, 2000000000):
                 Algorithm.writeCurrentPopulationToFile(name, run, currentFileName, functionEvaluations, population, population.frequency, best.sequence)
                 PpaAlgorithm.writeBestToFile(name, run, functionEvaluations, best.getObjectiveValue(), bestFileName)
                 PpaAlgorithm.writeCurrentPopulationToAllFile(name, run, functionEvaluations, population, allPopFileName)
-
-            if PpaAlgorithm.testMethod(previousEvaluations, functionEvaluations, 1000000, 2000000000):
-                Algorithm.writeCurrentPopulationToFile(name, run, currentFileName, functionEvaluations, population,
-                                                       population.frequency, best.sequence)
 
         Algorithm.writeCurrentPopulationToFile(name, run, currentFileName, functionEvaluations, population,
                                                population.frequency, best.sequence)
@@ -155,15 +146,10 @@ class PpaAlgorithm:
 
             if functionEvaluations < 1000 or \
                     PpaAlgorithm.testMethod(previousEvaluations, functionEvaluations, 1000, 1000000) or \
-                    PpaAlgorithm.testMethod(previousEvaluations, functionEvaluations, 1000000, 100000000) or \
-                    PpaAlgorithm.testMethod(previousEvaluations, functionEvaluations, 100000000, 2000000000):
+                    PpaAlgorithm.testMethod(previousEvaluations, functionEvaluations, 1000000, 2000000000):
                 Algorithm.writeCurrentPopulationToFile(name, run, currentFileName, functionEvaluations, population, population.frequency, best.sequence)
                 PpaAlgorithm.writeBestToFile(name, run, functionEvaluations, best.getObjectiveValue(), bestFileName)
                 PpaAlgorithm.writeCurrentPopulationToAllFile(name, run, functionEvaluations, population, allPopFileName)
-
-            if PpaAlgorithm.testMethod(previousEvaluations, functionEvaluations, 1000000, 2000000000):
-                Algorithm.writeCurrentPopulationToFile(name, run, currentFileName, functionEvaluations, population,
-                                                       population.frequency, best.sequence)
 
         Algorithm.writeCurrentPopulationToFile(name, run, currentFileName, functionEvaluations, population,
                                                population.frequency, best.sequence)

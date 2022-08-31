@@ -17,4 +17,4 @@ if __name__ == '__main__':
         result[name] = size
     sortedInstances = dict(sorted(result.items(), key=operator.itemgetter(1), reverse=True))
 
-    Experiments.runHillClimberComparisonExperiment(library, sortedInstances)
+    Experiments.runPpaComparisonExperiment(library, sortedInstances)
