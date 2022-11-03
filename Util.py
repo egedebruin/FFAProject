@@ -5,6 +5,8 @@ import numpy as np
 import os
 import gc
 
+from scipy.stats import norm
+import matplotlib.mlab as mlab
 from jssp.JSSPFactory import JSSPFactory
 
 
@@ -228,12 +230,16 @@ class Util:
 
     @staticmethod
     def showTimeHistogram(executionTimes):
-        plt.hist(executionTimes, bins=30)
-        plt.legend()
+        n, bins, patches = plt.hist(x=executionTimes, color='#0504aa',
+                                    alpha=0.7, rwidth=0.9, bins=30)
+        (average, stdv) = np.round(norm.fit(executionTimes), 2)
+        y = norm.pdf(bins, average, stdv)
+        l = plt.plot(bins, y * 0.03333 * sum(executionTimes), 'r--', linewidth=2)
+        plt.grid(axis='y', alpha=0.75)
         plt.xlabel('Objective Value')
-        plt.ylabel('Amount of solutions')
-        plt.title("Random instance with 10 machines and 10 jobs")
-        plt.savefig('Distribution_graph3')
+        plt.ylabel('Number of Solutions')
+        plt.title("Objective value distribution for instance ft06\n6 jobs and 6 machines, " + r'$\mu$=' + str(average)
+                  + " and " + r'$\sigma$=' + str(stdv))
         plt.show()
 
     @staticmethod

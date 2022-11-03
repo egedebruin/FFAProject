@@ -1,11 +1,13 @@
 import json
 import os
+import random
 import sys
 from collections import defaultdict
 
 import pandas as pd
 import matplotlib.pyplot as plt
 
+from Config import Config
 from Experiments import Experiments
 from Util import Util
 
@@ -14,6 +16,8 @@ from Util import Util
 #     library = Util.readFullLibrary('files/jssp-instances/full_full_library.txt')
 #
 #     Experiments.runPpaComparisonExperiment(library)
+from genotype.SimpleEncoding import SimpleEncoding
+from jssp.JSSPFactory import JSSPFactory
 
 results = pd.read_csv('files/output/ppa/allResults.csv')
 hcResults = pd.read_csv('files/output/hc/allResults.csv')
@@ -122,9 +126,9 @@ for index, value in results.iterrows():
 # plt.legend()
 # plt.show()
 
-library = Util.readFullLibrary('files/jssp-instances/full_full_library.txt')
+#library = Util.readFullLibrary('files/jssp-instances/full_full_library.txt')
 #Util.createFunctionEvaluationsPlotPpa('files/output/ppa/populations/1/', library, 'la38')
-Util.plotBoth(library, ['swv05', 'dmu76'])
+#Util.plotBoth(library, ['swv05', 'dmu76'])
 
 
 # from jssp.JSSPFactory import JSSPFactory
@@ -299,3 +303,43 @@ Util.plotBoth(library, ['swv05', 'dmu76'])
 #
 # fig.legend(handles, labels, loc=9)
 # plt.show()
+
+# Config.jssp = JSSPFactory.generateJSSPFromFormat(library['ft06'])
+#
+# executionTimes, best, bestTime = Experiments.doRandomExperiments(1000000)
+# Util.showTimeHistogram(executionTimes)
+#
+# simpleEncoding = SimpleEncoding([2, 3, 5, 3, 0, 1, 1, 5, 3, 3, 5, 2, 4, 2, 3, 2, 3, 4, 0, 5, 0, 4, 4, 2, 4, 4, 1, 0, 5, 1, 2, 5, 0, 1, 0, 1])
+# phenotype = simpleEncoding.toPhenotype()
+# print(phenotype.toDataFrame())
+
+allDict = {
+    'instance': [],
+    'run': [],
+    'jobs': [],
+    'machines': [],
+    'hc': [],
+    'ffa': [],
+    'bks': [],
+}
+library = Util.readFullLibrary('files/jssp-instances/full_full_library.txt')
+bestKnown = Util.readFullLibraryBestKnown('files/jssp-instances/full_full_library.txt')
+resultFolder = 'files/output/hc2/results/'
+for run in os.listdir(resultFolder):
+    for subFolder in os.listdir(resultFolder + run):
+
+        jssp = JSSPFactory.generateJSSPFromFormat(library[subFolder])
+        hcFile = open(resultFolder + run + "/" + subFolder + "/hc.txt")
+        ffaFile = open(resultFolder + run + "/" + subFolder + "/fhc.txt")
+        hcResult = int(hcFile.read())
+        ffaResult = int(ffaFile.read())
+        allDict['instance'].append(subFolder)
+        allDict['run'].append(run)
+        allDict['jobs'].append(jssp.amountJobs)
+        allDict['machines'].append(jssp.amountMachines)
+        allDict['hc'].append(hcResult)
+        allDict['ffa'].append(ffaResult)
+        allDict['bks'].append(bestKnown[subFolder])
+
+df = pd.DataFrame(allDict)
+df.to_csv('allResults.csv', index=False)
