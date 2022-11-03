@@ -5,6 +5,7 @@ import numpy as np
 import os
 import gc
 
+from os.path import exists
 from scipy.stats import norm
 import matplotlib.mlab as mlab
 from jssp.JSSPFactory import JSSPFactory
@@ -13,75 +14,80 @@ from jssp.JSSPFactory import JSSPFactory
 class Util:
 
     @staticmethod
-    def createAllResultsFile(fileName):
-        library = Util.readFullLibrary(fileName)
-        bestKnown = Util.readFullLibraryBestKnown(fileName)
-        resultFolder = 'files/output/ppa/results/1/'
-        allDict = {'instance': [],
-                   'jobs': [],
-                   'machines': [],
-                   'ppa': [],
-                   'ffaSelect': [],
-                   'ffaComplete': [],
-                   'best known solution': []}
-        for subFolder in os.listdir(resultFolder):
-            jssp = JSSPFactory.generateJSSPFromFormat(library[subFolder])
-            if not os.path.exists(resultFolder + subFolder + "/ffaCompletePpa.txt"):
-                continue
-            ppaFile = open(resultFolder + subFolder + "/ppa.txt")
-            ffaFile = open(resultFolder + subFolder + "/ffaSelectPpa.txt")
-            ffaCompleteFile = open(resultFolder + subFolder + "/ffaCompletePpa.txt")
-            ppaResult = int(ppaFile.read())
-            ffaResult = int(ffaFile.read())
-            ffaCompleteResult = int(ffaCompleteFile.read())
-
-            allDict['instance'].append(subFolder)
-            allDict['jobs'].append(jssp.amountJobs)
-            allDict['machines'].append(jssp.amountMachines)
-            allDict['ppa'].append(ppaResult)
-            allDict['ffaSelect'].append(ffaResult)
-            allDict['ffaComplete'].append(ffaCompleteResult)
-            allDict['best known solution'].append(bestKnown[subFolder])
+    def createAllResultsFile():
+        allDict = {
+            'instance': [],
+            'run': [],
+            'jobs': [],
+            'machines': [],
+            'hc': [],
+            'ffa': [],
+            'bks': [],
+        }
+        library = Util.readFullLibrary('files/jssp-instances/full_full_library.txt')
+        bestKnown = Util.readFullLibraryBestKnown('files/jssp-instances/full_full_library.txt')
+        for run in os.listdir(resultFolder):
+            for subFolder in os.listdir(resultFolder + run):
+                jssp = JSSPFactory.generateJSSPFromFormat(library[subFolder])
+                hcFile = open(resultFolder + run + "/" + subFolder + "/hc.txt")
+                ffaFile = open(resultFolder + run + "/" + subFolder + "/fhc.txt")
+                hcResult = int(hcFile.read())
+                ffaResult = int(ffaFile.read())
+                allDict['instance'].append(subFolder)
+                allDict['run'].append(run)
+                allDict['jobs'].append(jssp.amountJobs)
+                allDict['machines'].append(jssp.amountMachines)
+                allDict['hc'].append(hcResult)
+                allDict['ffa'].append(ffaResult)
+                allDict['bks'].append(bestKnown[subFolder])
 
         df = pd.DataFrame(allDict)
         df.to_csv('allResults.csv', index=False)
 
     @staticmethod
-    def createFunctionEvaluationsPlot(resultFolder, library):
-        ole = False
-        for subFolder in os.listdir(resultFolder):
-            if ole or subFolder == 'yn1':
-                ole = True
-            else:
-                continue
-            jssp = JSSPFactory.generateJSSPFromFormat(library[subFolder])
-            fileName = resultFolder + subFolder + "/"
-            fileHC = open(fileName + 'hc.txt')
-            fileFHC = open(fileName + 'fhc.txt')
+    def createFunctionEvaluationsPlot():
+        populationsFolder = 'files/output/hc2/populations/'
+        library = Util.readFullLibrary('files/jssp-instances/full_full_library.txt')
+        bestKnown = Util.readFullLibraryBestKnown('files/jssp-instances/full_full_library.txt')
+        for run in os.listdir(populationsFolder):
+            for subFolder in os.listdir(populationsFolder + run):
+                if (exists('files/output/hc2/results/' + run + "/" + subFolder + "/plot.png")):
+                    print(subFolder + " exists!")
+                    continue
+                jssp = JSSPFactory.generateJSSPFromFormat(library[subFolder])
+                fileName = populationsFolder + run + "/" + subFolder + "/"
+                fileHC = open(fileName + 'hc.txt')
+                fileFHC = open(fileName + 'fhc.txt')
 
-            intermediateResultsHC = list(map(int, fileHC.readline().split(', ')[:-2]))
-            intermediateResultsFHC = list(map(int, fileFHC.readline().split(', ')[:-1]))
-            intermediateResultsHC.insert(0, None)
+                recordsHc = fileHC.readline().split(', ')[:-1]
+                xHc = []
+                yHc = []
+                for record in recordsHc:
+                    xHc.append(int(record.split(':')[0]))
+                    yHc.append(int(record.split(':')[1]))
 
-            xAxis = []
-            for i in range(len(intermediateResultsHC)):
-                xAxis.append((i * 1000) + 1)
+                recordsFfa = fileFHC.readline().split(', ')[:-1]
+                xFfa = []
+                yFfa = []
+                for record in recordsFfa:
+                    xFfa.append(int(record.split(':')[0]))
+                    yFfa.append(int(record.split(':')[1]))
 
-            plt.plot(xAxis, intermediateResultsHC, label='Hill Climber')
-            plt.plot(xAxis, intermediateResultsFHC, label='FFA')
-            plt.xscale('log')
-            plt.legend()
-            plt.xlabel('Function Evaluations')
-            plt.ylabel('Objective Value (Execution time)')
-            plt.title(subFolder + "(" + str(jssp.amountMachines) + " machines and " + str(jssp.amountJobs) + " jobs)")
-            plt.savefig('files/output/hc/results/1/' + subFolder + '/plot.png')
-            plt.figure().clear()
-            plt.close('all')
-            plt.cla()
-            plt.clf()
-            gc.collect()
+                xBks = [0, pow(2, 30)]
+                yBks = [bestKnown[subFolder], bestKnown[subFolder]]
 
-            print(subFolder + " done!")
+                plt.plot(xHc, yHc, label='Hill Climber', c='orange')
+                plt.plot(xFfa, yFfa, label='FFA', c='blue')
+                plt.plot(xBks, yBks, label='Best known solution', c='black')
+                plt.xscale('log')
+                plt.legend()
+                plt.xlabel('Function Evaluations')
+                plt.ylabel('Objective Value (Makespan)')
+                plt.title(subFolder + "(" + str(jssp.amountMachines) + " machines and " + str(jssp.amountJobs) + " jobs)")
+                plt.savefig('files/output/hc2/results/' + run + '/' + subFolder + '/plot.png')
+                plt.figure().clear()
+                plt.close('all')
+                print(subFolder + " done!")
 
     @staticmethod
     def createFunctionEvaluationsPlotPpa(resultFolder, library, instanceName):

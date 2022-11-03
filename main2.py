@@ -313,33 +313,4 @@ for index, value in results.iterrows():
 # phenotype = simpleEncoding.toPhenotype()
 # print(phenotype.toDataFrame())
 
-allDict = {
-    'instance': [],
-    'run': [],
-    'jobs': [],
-    'machines': [],
-    'hc': [],
-    'ffa': [],
-    'bks': [],
-}
-library = Util.readFullLibrary('files/jssp-instances/full_full_library.txt')
-bestKnown = Util.readFullLibraryBestKnown('files/jssp-instances/full_full_library.txt')
-resultFolder = 'files/output/hc2/results/'
-for run in os.listdir(resultFolder):
-    for subFolder in os.listdir(resultFolder + run):
-
-        jssp = JSSPFactory.generateJSSPFromFormat(library[subFolder])
-        hcFile = open(resultFolder + run + "/" + subFolder + "/hc.txt")
-        ffaFile = open(resultFolder + run + "/" + subFolder + "/fhc.txt")
-        hcResult = int(hcFile.read())
-        ffaResult = int(ffaFile.read())
-        allDict['instance'].append(subFolder)
-        allDict['run'].append(run)
-        allDict['jobs'].append(jssp.amountJobs)
-        allDict['machines'].append(jssp.amountMachines)
-        allDict['hc'].append(hcResult)
-        allDict['ffa'].append(ffaResult)
-        allDict['bks'].append(bestKnown[subFolder])
-
-df = pd.DataFrame(allDict)
-df.to_csv('allResults.csv', index=False)
+Util.createFunctionEvaluationsPlot()
