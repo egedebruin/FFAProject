@@ -236,16 +236,20 @@ class Util:
 
     @staticmethod
     def showTimeHistogram(executionTimes):
-        n, bins, patches = plt.hist(x=executionTimes, color='#0504aa',
+        fig, ax = plt.subplots()
+        n, bins, patches = plt.hist(x=executionTimes, color='blue',
                                     alpha=0.7, rwidth=0.9, bins=30)
         (average, stdv) = np.round(norm.fit(executionTimes), 2)
         y = norm.pdf(bins, average, stdv)
-        l = plt.plot(bins, y * 0.03333 * sum(executionTimes), 'r--', linewidth=2)
+        text = '\n'.join((
+            r'$\mu=%.2f$' % (average,),
+            r'$\sigma=%.2f$' % (stdv,)))
+        plt.text(0.6, 0.85, text, horizontalalignment='center', verticalalignment='center', transform=ax.transAxes)
+        plt.plot(bins, y * 0.03333 * sum(executionTimes), 'r--', linewidth=2)
         plt.grid(axis='y', alpha=0.75)
         plt.xlabel('Objective Value')
         plt.ylabel('Number of Solutions')
-        plt.title("Objective value distribution for instance ft06\n6 jobs and 6 machines, " + r'$\mu$=' + str(average)
-                  + " and " + r'$\sigma$=' + str(stdv))
+        plt.title("Objective value distribution for instance ft06\n6 jobs and 6 machines")
         plt.show()
 
     @staticmethod
@@ -309,69 +313,3 @@ class Util:
                 continue
 
         return bks
-
-# from jssp.JSSPFactory import JSSPFactory
-#
-# library = Util.readFullLibrary('files/jssp-instances/full_full_library.txt')
-#
-# subFolders = ['dmu80', 'orb03', 'dmu79', 'swv05', 'dmu76', 'dmu50']
-# resultFolder = 'files/output/hc/populations/1/'
-# intermediateHCs = []
-# intermediateFHCs = []
-# xAxises = []
-# titles = []
-# for subFolder in subFolders:
-#     jssp = JSSPFactory.generateJSSPFromFormat(library[subFolder])
-#     fileName = resultFolder + subFolder + "/"
-#     fileHC = open(fileName + 'hc.txt')
-#     fileFHC = open(fileName + 'fhc.txt')
-#
-#     intermediateResultsHC = list(map(int, fileHC.readline().split(', ')[:-2]))
-#     intermediateResultsFHC = list(map(int, fileFHC.readline().split(', ')[:-1]))
-#     intermediateResultsHC.insert(0, None)
-#
-#     xAxis = []
-#     for i in range(len(intermediateResultsHC)):
-#         xAxis.append((i * 1000) + 1)
-#
-#     intermediateHCs.append(intermediateResultsHC)
-#     intermediateFHCs.append(intermediateResultsFHC)
-#     xAxises.append(xAxis)
-#     titles.append(subFolder + "(" + str(jssp.amountMachines) + " machines and " + str(jssp.amountJobs) + " jobs)")
-#
-# fig, ((ax1, ax2), (ax3, ax4), (ax5, ax6)) = plt.subplots(3, 2, sharex=True)
-# ax1.plot(xAxises[0], intermediateHCs[0], label='Hill Climber')
-# ax1.plot(xAxises[0], intermediateFHCs[0], label='FFA')
-# ax1.set_title(titles[0])
-# ax2.plot(xAxises[1], intermediateHCs[1])
-# ax2.plot(xAxises[1], intermediateFHCs[1])
-# ax2.set_title(titles[1])
-# ax3.plot(xAxises[2], intermediateHCs[2])
-# ax3.plot(xAxises[2], intermediateFHCs[2])
-# ax3.set_title(titles[2])
-# ax4.plot(xAxises[3], intermediateHCs[3])
-# ax4.plot(xAxises[3], intermediateFHCs[3])
-# ax4.set_title(titles[3])
-# ax5.plot(xAxises[4], intermediateHCs[4])
-# ax5.plot(xAxises[4], intermediateFHCs[4])
-# ax5.set_title(titles[4])
-# ax6.plot(xAxises[5], intermediateHCs[5])
-# ax6.plot(xAxises[5], intermediateFHCs[5])
-# ax6.set_title(titles[5])
-# plt.xscale('log')
-# fig.text(0.5, 0.04, 'Function Evaluations', ha='center', fontsize=16)
-# fig.text(0.04, 0.5, 'Objective Value (Execution time)', va='center', rotation='vertical', fontsize=16)
-# handles, labels = ax1.get_legend_handles_labels()
-# fig.legend(handles, labels, loc=9)
-#
-# plt.show()
-
-# plt.plot(xAxis, intermediateResultsHC, label='Hill Climber')
-# plt.plot(xAxis, intermediateResultsFHC, label='FFA')
-# plt.xscale('log')
-# plt.show()
-
-# plt.legend()
-# plt.xlabel('Function Evaluations')
-# plt.ylabel('Objective Value (Execution time)')
-# plt.title(subFolder + "(" + str(jssp.amountMachines) + " machines and " + str(jssp.amountJobs) + " jobs)")
