@@ -14,7 +14,7 @@ from jssp.JSSPFactory import JSSPFactory
 class Util:
 
     @staticmethod
-    def createAllResultsFile():
+    def createAllResultsFile(resultFolder):
         allDict = {
             'instance': [],
             'run': [],
