@@ -29,10 +29,9 @@ if __name__ == '__main__':
     sortedInstances = dict(sorted(result.items(), key=operator.itemgetter(1), reverse=True))
 
     signal.signal(signal.SIGALRM, alarm_handler)
-    signal.alarm((60 * 60 * 24 * 5) - 60 * 15)
-
+    signal.alarm((60 * 60 * 24 * 5) - 60 * 15)  # 5 days - 15 minutes
     try:
         Experiments.runPpaComparisonExperiment(library, sortedInstances)
-        #Experiments.runHillClimberComparisonExperiment(library, sortedInstances)
+        # Experiments.runHillClimberComparisonExperiment(library, sortedInstances)
     except TimeOutException as ex:
         print('Alarmed, we are done')
