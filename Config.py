@@ -3,7 +3,7 @@ class Config:
     populationSize = 40
     offspringSize = 16
     maxOffspring = 10
-    relativeMaxSwaps = 0.5
+    relativeMaxSwaps = 0.1
     amountBitSwaps = 10
     runs = 1
     timePerRun = 300
