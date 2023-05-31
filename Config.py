@@ -3,7 +3,7 @@ class Config:
     populationSize = 40
     offspringSize = 16
     maxOffspring = 10
-    relativeMaxAmountSwaps = 0.5
+    relativeMaxSwaps = 0.5
     amountBitSwaps = 10
     runs = 1
     timePerRun = 300
@@ -11,3 +11,4 @@ class Config:
     poolProcesses = 16
     resultFolder = 'files/output/ppa2/results/'
     intermediateFolder = 'files/output/ppa2/populations/'
+    libraryFile = 'files/jssp-instances/full_full_library.txt'

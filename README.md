@@ -13,6 +13,16 @@ Important variables for Hill Climber experiment:
 - resultFolder: folder to save results
 - intermediateFolder: folder to save intermediate results during runs.
 
+Important variables for PPA experiment:
+- runs: number of runs
+- maxFunctionEvaluations: maximum number of function evaluations per run
+- poolProcessed: number of processors used on machine
+- populationSize: number of individuals selected per generation
+- maxOffspring: maximum number of offspring per individual
+- relativeMaxSwaps: maximum number of swaps relative to the permutation list size
+- resultFolder: folder to save results
+- intermediateFolder: folder to save intermediate results during runs.
+
 ### Change main.py file
 - Choose library, the current library (full_full_library.txt) is the one used in the (original) experiment
 - Choose the `Experiments.runHillClimberComparisonExperiment(library, sortedInstances)` function for hill climber experiment.

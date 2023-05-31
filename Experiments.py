@@ -156,8 +156,6 @@ class Experiments:
 
     @staticmethod
     def runPpaAlgorithm(instanceName, instance, run):
-        if Experiments.instanceIsTaken(instanceName, 'ppa'):
-            return
         print("Running ppa algorithm " + instanceName)
         restartConfig = RestartConfig()
         restartConfig.setRestartValuesPpa(instanceName, run, '/ppaCurrent.txt')
@@ -170,8 +168,6 @@ class Experiments:
 
     @staticmethod
     def runPpaFfaSelectAlgorithm(instanceName, instance, run):
-        if Experiments.instanceIsTaken(instanceName, 'ffaSelect'):
-            return
         print("Running ffaSelect algorithm " + instanceName)
         restartConfig = RestartConfig()
         restartConfig.setRestartValuesPpa(instanceName, run, '/ffaSelectCurrent.txt')
@@ -184,8 +180,6 @@ class Experiments:
 
     @staticmethod
     def runPpaFfaCompleteAlgorithm(instanceName, instance, run):
-        if Experiments.instanceIsTaken(instanceName, 'ffaComplete'):
-            return
         print("Running ffaComplete algorithm " + instanceName)
         restartConfig = RestartConfig()
         restartConfig.setRestartValuesPpa(instanceName, run, '/ffaCompleteCurrent.txt')
