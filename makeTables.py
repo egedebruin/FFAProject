@@ -47,7 +47,7 @@ comparisonResults = {
 }
 
 df = pd.read_csv('files/output/hc2/allResults.csv')
-weiseDf = pd.read_csv('files/weiseResultsOriginal.csv')
+weiseDf = pd.read_csv('files/results/weiseResultsOriginal.csv')
 bestDf = df.groupby('instance').min().reset_index()
 averageDf = df.groupby('instance').mean().reset_index()
 

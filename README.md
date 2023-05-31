@@ -34,6 +34,6 @@ Important variables for Hill Climber experiment:
 - Run makeTables.py
 - This will create three files in main directory: `own_results.csv`, `weise_results` and `comparison_results.csv`
 - The first is a summary of our own results. For this the `files/output/hc2/allResults.csv` file is used.
-- The first is a summary of Weise et al.'s results. For this the `files/weiseResultsOriginal.csv` file is used.
+- The second is a summary of Weise et al.'s results. For this the `files/weiseResultsOriginal.csv` file is used.
 - The third is a comparison with Weise et al.'s original results. For this the same files are used.
 - Both result files can be found in `files`.
